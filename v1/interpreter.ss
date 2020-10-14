@@ -6,7 +6,8 @@
     (eval-exp form)))
 
 ; eval-exp is the main component of the interpreter
-
+;; TODO: Add all grammar forms for initial implementation of eval-exp
+;; NOTE: overridden later with syntax expander. Currently we evaluate everything as part of original grammar. Later, all exps will be converted to core form
 (define eval-exp
   (lambda (exp)
     (cases expression exp
@@ -20,14 +21,13 @@
       [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
-
+;; TODO: Add env field
 (define eval-rands
   (lambda (rands)
     (map eval-exp rands)))
 
 ;  Apply a procedure to its arguments.
-;  At this point, we only have primitive procedures.  
-;  User-defined procedures will be added later.
+;; TODO: implement user-defined procedures evaluation
 
 (define apply-proc
   (lambda (proc-value args)
@@ -53,13 +53,13 @@
 (define apply-prim-proc
   (lambda (prim-proc args)
     (case prim-proc
-      [(+) (+ (1st args) (2nd args))]
-      [(-) (- (1st args) (2nd args))]
-      [(*) (* (1st args) (2nd args))]
+      [(+) (apply + args)]
+      [(-) (apply - args)]
+      [(*) (apply * args)]
       [(add1) (+ (1st args) 1)]
       [(sub1) (- (1st args) 1)]
       [(cons) (cons (1st args) (2nd args))]
-      [(=) (= (1st args) (2nd args))]
+      [(=) (apply = args)]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))
