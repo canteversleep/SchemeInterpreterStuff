@@ -1,36 +1,43 @@
 ; top-level-eval evaluates a form in the global environment
 
+
+;; our global environment starts out as the empty environment but can be expanded
+
+(define global-env empty-env)
+
 (define top-level-eval
   (lambda (form)
-    ; later we may add things that are not expressions.
-    (eval-exp form)))
+    (eval-exp form (empty-env))))
 
 ; eval-exp is the main component of the interpreter
 ;; TODO: Add all grammar forms for initial implementation of eval-exp
 ;; NOTE: overridden later with syntax expander. Currently we evaluate everything as part of original grammar. Later, all exps will be converted to core form
 (define eval-exp
-  (lambda (exp)
+  (lambda (exp env) 
     (cases expression exp
            [lit-exp (datum) (if (nqatom? datum)
                                 datum
                                 (cadr datum))]
-      [var-exp (id)
-	(apply-env init-env id)]
-      [app-exp (rator rands)
-        (let ([proc-value (eval-exp rator)]
-              [args (eval-rands rands)])
-          (apply-proc proc-value args))]
-      [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
+           [var-exp (id)
+                    (apply-env env id)]
+           [app-exp (rator rands)
+                    (let ([proc-value (eval-exp rator env)]
+                          [args (eval-rands rands env)])
+                      (apply-proc proc-value args))]
+           [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
 ;; TODO: Add env field
 (define eval-rands
-  (lambda (rands)
-    (map eval-exp rands)))
+  (lambda (rands env)
+    (map
+     (lambda (exp)
+       (eval-exp exp env))
+     rands)))
 
 ;  Apply a procedure to its arguments.
 ;; TODO: implement user-defined procedures evaluation
-
+;; no need to pass in the environment here since only values are ever passed in
 (define apply-proc
   (lambda (proc-value args)
     (cases proc-val proc-value
