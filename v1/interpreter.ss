@@ -20,10 +20,24 @@
                                 (cadr datum))]
            [var-exp (id)
                     (apply-env env id)]
+           ;[lambda]
            [app-exp (rator rands)
                     (let ([proc-value (eval-exp rator env)]
                           [args (eval-rands rands env)])
                       (apply-proc proc-value args))]
+           ;[set!]
+           ;[if]
+           [let-exp (name vars exps bodies variant)
+                    (case variant
+                      [(let)
+                       (if name
+                           (eopl:error 'eval-exp "Yet to be implemented")
+                           (eval-bodies
+                            bodies
+                            (extend-env vars
+                                        (eval-rands exps env)
+                                        env)))]
+                      [else (eopl:error 'eval-exp "Yet to be implemented")])]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
@@ -34,6 +48,18 @@
      (lambda (exp)
        (eval-exp exp env))
      rands)))
+
+
+; evaluate the bodies in an environment expanding expression such as a lambda or a begin,
+; returning the last
+
+(define eval-bodies
+  (lambda (bodies env)
+    (if (null? (cdr bodies))
+        (eval-exp (car bodies) env)
+        (begin (eval-exp (car bodies) env)
+               (eval-bodies (cdr bodies) env)))
+
 
 ;  Apply a procedure to its arguments.
 ;; TODO: implement user-defined procedures evaluation
