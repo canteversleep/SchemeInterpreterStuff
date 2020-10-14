@@ -48,7 +48,7 @@
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list
-;; TODO: Add env field
+;; DONE: Add env field
 (define eval-rands
   (lambda (rands env)
     (map
@@ -87,7 +87,9 @@
                    "Attempt to apply bad procedure: ~s" 
                     proc-value)])))
 
-(define *prim-proc-names* '(+ - * add1 sub1 cons =))
+(define *prim-proc-names* '(+ - * add1 sub1 cons = / zero? not >= car cdr list null? eq?
+                              equal? length list->vector list? pair? vector->list vector?
+                              number? symbol? caar cadr cadar procedure? set-car! set-cdr!))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -109,6 +111,30 @@
       [(sub1) (- (1st args) 1)]
       [(cons) (cons (1st args) (2nd args))]
       [(=) (apply = args)]
+      [(/) (apply / args)]
+      [(zero?) (apply zero? args)]
+      [(not) (apply not args)]
+      [(>=) (apply >= args)]
+      [(car) (apply car args)]
+      [(cdr) (apply cdr args)]
+      [(list) (apply list args)]
+      [(null?) (apply null? args)]
+      [(eq?) (eq? (1st args) (2nd args))]
+      [(equal?) (equal? (1st args) (2nd args))]
+      [(length) (apply length args)]
+      [(list->vector) (apply list->vector args)]
+      [(list?) (apply list? args)]
+      [(pair?) (apply pair? args)]
+      [(vector->list) (apply vector->list args)]
+      [(vector?) (apply vector? args)]
+      [(number?) (apply number? args)]
+      [(symbol?) (apply symbol? args)]
+      [(caar) (apply caar args)]
+      [(cadr) (apply cadr args)]
+      [(cadar) (apply cadar args)]
+      [(procedure?) (apply proc-val? args)]
+      [(set-car!) (set-car! (1st args) (2nd args))]
+      [(set-cdr!) (set-cdr! (1st args) (2nd args))]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

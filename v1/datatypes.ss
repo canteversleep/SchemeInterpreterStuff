@@ -48,7 +48,8 @@
    (let-variant symbol?)])
 
 ;; environment type definitions
-;; TODO: implement env based on chosen representation
+;; TODO: implement env based on different chosen representation later.
+;; im not a big fan of this representation
 
 (define scheme-value?
   (lambda (x) #t))
