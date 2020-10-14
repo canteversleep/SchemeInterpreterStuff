@@ -65,7 +65,8 @@
 
 (define-datatype proc-val proc-val?
   [prim-proc
-   (name symbol?)])
-	 
-	 
-	 
+   (name symbol?)]
+  [closure
+   (ids (list-of symbol?))
+   (bodies (list-of expression?))
+   (current-env environment?)])

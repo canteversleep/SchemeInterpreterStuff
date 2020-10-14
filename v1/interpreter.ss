@@ -20,7 +20,8 @@
                                 (cadr datum))]
            [var-exp (id)
                     (apply-env env id)]
-           ;[lambda]
+           [lambda-exp (ids bodies)
+                       (closure ids bodies env)]
            [app-exp (rator rands)
                     (let ([proc-value (eval-exp rator env)]
                           [args (eval-rands rands env)])
@@ -67,9 +68,16 @@
 (define apply-proc
   (lambda (proc-value args)
     (cases proc-val proc-value
-      [prim-proc (op) (apply-prim-proc op args)]
-			; You will add other cases
-      [else (error 'apply-proc
+           [prim-proc
+            (op) (apply-prim-proc op args)]
+           [closure
+            (ids bodies env)
+            (eval-bodies
+             bodies
+             (extend-env ids
+                         args ;note that we do not evaluate the args as that was already done
+                         env))]
+           [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s" 
                     proc-value)])))
 
