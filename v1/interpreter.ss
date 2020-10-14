@@ -27,7 +27,13 @@
                           [args (eval-rands rands env)])
                       (apply-proc proc-value args))]
            ;[set!]
-           ;[if]
+           [if-exp (test consequent alternative)
+                   (if alternative
+                       (if (eval-exp test env)
+                           (eval-exp consequent env)
+                           (eval-exp alternative env))
+                       (if (eval-exp test env)
+                           (eval-exp consequent env)))]
            [let-exp (name vars exps bodies variant)
                     (case variant
                       [(let)
@@ -59,7 +65,7 @@
     (if (null? (cdr bodies))
         (eval-exp (car bodies) env)
         (begin (eval-exp (car bodies) env)
-               (eval-bodies (cdr bodies) env)))
+               (eval-bodies (cdr bodies) env)))))
 
 
 ;  Apply a procedure to its arguments.
