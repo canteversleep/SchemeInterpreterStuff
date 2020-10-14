@@ -4,6 +4,12 @@
 ; some helpers
 
 (define (literal? x)
+  (or (nqatom? x) (quoted? x)))
+
+(define (quoted? x)
+  (eq? (car x) 'quote))
+
+(define (nqatom? x)
   (and (atom? x) (not (list? x))))
 
 (define (optional? x)

@@ -11,7 +11,9 @@
 (define eval-exp
   (lambda (exp)
     (cases expression exp
-      [lit-exp (datum) datum]
+           [lit-exp (datum) (if (nqatom? datum)
+                                datum
+                                (cadr datum))]
       [var-exp (id)
 	(apply-env init-env id)]
       [app-exp (rator rands)
