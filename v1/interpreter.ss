@@ -179,13 +179,3 @@
 
 (define eval-one-exp
   (lambda (x) (top-level-eval (parse-exp x))))
-
-
-
-
-
-
-
-
-
-
