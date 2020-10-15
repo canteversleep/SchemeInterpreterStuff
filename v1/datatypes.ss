@@ -3,6 +3,46 @@
 
 ; some helpers
 
+; conses a list up until the nth reference
+
+(define list-up-until
+  (lambda (ls n)
+    (cond
+     [(zero? n) '()]
+     [else (cons (car ls) (list-up-until (cdr ls) (sub1 n)))])))
+
+; composes the same procedure n-times
+
+(define compose
+  (lambda (proc n)
+    (cond
+     [(zero? n) (lambda (x) x)]
+     [else (lambda (x) ((compose proc (sub1 n)) (proc x)))])))
+
+; finds the length of the list component that can be made proper
+; usage: (proper-counter '(x y . z) => 2)
+; assumptions: all elements of the list are symbols
+
+(define proper-counter
+  (lambda (ls)
+    (let recr ([counter 0] [ls ls])
+      (if (symbol? ls)
+          counter
+          (recr (add1 counter) (cdr ls))))))
+
+; guarantees that all elements of an improper list are symbols
+; assumptions: non-empty improper list of the form (x1 x2 x3 ... . xn)
+
+(define improper-safety
+  (lambda (ls)
+    (cond
+     [(symbol? ls) #t]
+     [(pair? ls)
+        (and (symbol? (car ls))
+             (improper-safety (cdr ls)))]
+     [else #f])))
+
+
 (define (literal? x)
   (or (nqatom? x) (quoted? x)))
 
@@ -28,7 +68,7 @@
    (formals
     (lambda (x)
       (or (null? x) (symbol? x) ((list-of symbol?) x)
-          (and ((list-of symbol?) x) (symbol? (cdr x))))))
+          (improper-safety x))))
    (bodies (list-of expression?))]
   [app-exp
    (rator expression?)

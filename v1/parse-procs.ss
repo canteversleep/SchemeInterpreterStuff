@@ -36,7 +36,7 @@
                           (cond
                            [((list-of symbol?) fs) fs]
                            [(list? fs) (error-reporter 'lambda-formals-symbol fs)]
-                           [(and ((list-of symbol?) (car fs)) (symbol? (cdr fs))) fs]
+                           [(improper-safety fs) fs]
                            [else (error-reporter 'lambda-formals-symbol fs)])]
                          [else (error-reporter 'lambda-formals-symbol fs)]))])
                 (let* ([bodies (cddr datum)]

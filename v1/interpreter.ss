@@ -80,17 +80,37 @@
             (ids bodies env)
             (eval-bodies
              bodies
-             (extend-env ids
-                         args ;note that we do not evaluate the args as that was already done
-                         env))]
+             (closure-extend ids
+                             args ;note that we do not evaluate the args as that was already done
+                             env))]
            [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s" 
-                    proc-value)])))
+                   proc-value)])))
+
+; Closure helper for variables ids
+
+(define closure-extend
+  (lambda (ids args env)
+    (cond
+     [(symbol? ids) (extend-env (list ids) (list args) env)]
+     [(null? ids) env]
+     [((list-of symbol?) ids) (extend-env ids args env)]
+     [(improper-safety ids)
+      (let ([when-improper (proper-counter ids)])
+        (extend-env
+         (append (list-up-until ids when-improper) (list ((compose cdr when-improper) ids)))
+         (append
+          (list-up-until args when-improper)
+          (list ((compose cdr when-improper) args)))
+         env))])))
+
+; helpers for closure-extend
+
 
 (define *prim-proc-names* '(+ - * add1 sub1 cons = / zero? not >= car cdr list null? eq?
                               equal? length list->vector list? pair? vector->list vector?
                               number? symbol? caar cadr cadar procedure? set-car! set-cdr!
-                              apply map vector vector-ref))
+                              apply map vector vector-ref > < <=))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -116,6 +136,9 @@
       [(zero?) (apply zero? args)]
       [(not) (apply not args)]
       [(>=) (apply >= args)]
+      [(>) (apply > args)]
+      [(<) (apply < args)]
+      [(<=) (apply <= args)]
       [(car) (apply car args)]
       [(cdr) (apply cdr args)]
       [(list) (apply list args)]
