@@ -68,6 +68,6 @@
   [prim-proc
    (name symbol?)]
   [closure
-   (ids (list-of symbol?))
+   (ids scheme-value?)
    (bodies (list-of expression?))
    (current-env environment?)])
