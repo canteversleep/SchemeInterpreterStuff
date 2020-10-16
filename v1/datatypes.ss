@@ -58,6 +58,7 @@
 (define (lit-pred? x)
   (or (eq? #f x) (eq? #t x)))
 
+; TODO: check case-exp type
 
 (define-datatype expression expression?
   [var-exp
@@ -85,7 +86,18 @@
    (vars (list-of symbol?))
    (exprs (list-of expression?))
    (bodies (list-of expression?))
-   (let-variant symbol?)])
+   (let-variant symbol?)]
+  [cond-exp
+   (preds (list-of expression?))
+   (resps (list-of expression?))]
+  [case-exp
+   (lists) (map (lambda (x) (list-of symbol?)))]
+  [or-exp
+   (preds (list-of expression?))]
+  [and-exp
+   (preds (list-of expression?))]
+  [begin-exp
+   (exps (list-of expression?))])
 
 ;; environment type definitions
 ;; TODO: implement env based on different chosen representation later.

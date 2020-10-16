@@ -16,6 +16,20 @@
 ;; <let-exp> ::= (let ({(identifier <LcExp>)}*) {LcExp}*)
 
 
+(let* ([test
+       '(cond
+         [p1 r1]
+         [p2 r2]
+         [p3 r3]
+         [p4 r4]
+         [else r5])]
+       [preds (map car (cdr test))]
+       [resps (map cadr (cdr test))])
+  )
+
+
+
+
 (define parse-exp
   (lambda (datum)
     (cond
