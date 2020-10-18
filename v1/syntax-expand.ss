@@ -18,14 +18,25 @@
                  (let-exp
                   (car vars) (car exprs)
                   (syntax-expand (let-exp #f (cdr vars) (cdr exprs) bodies 'let*)) 'let)]))])]
-           [and-exp (preds)]
-           [or-exp (preds)]
+           [and-exp
+            (preds)
+            (cond
+             [(null? preds) (lit-exp #t)]
+             [(null? (cdr preds)) (syntax-expand (car preds))]
+             [else (if-exp (syntax-expand (car preds))
+                           (syntax-expand (and-exp (cdr preds)))
+                           (lit-exp #f))])]
+           [or-exp
+            (preds)
+            (cond
+             [(null? preds) (lit-exp #f)]
+             [(null? (cdr preds)) (syntax-expand (car preds))]
+             [else (if-exp (syntax-expand (car preds))
+                           (syntax-expand (car preds))
+                           (syntax-expand (or-exp (cdr preds))))])]
            [case-exp (groups exprs)]
            [cond-exp (preds exprs)]
            [begin-exp (exps)]
            [else expr])))
 
 ;; A bunch of helpers for the expander
-
-(define let*->let
-  (lambda ()))
