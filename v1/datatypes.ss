@@ -91,7 +91,7 @@
    (preds (list-of expression?))
    (resps (list-of expression?))]
   [case-exp
-   (lists) (map (lambda (x) (list-of symbol?)))]
+   (groups (lambda (x) (andmap (lambda (x) ((list-of symbol?) x)) x)))]
   [or-exp
    (preds (list-of expression?))]
   [and-exp
