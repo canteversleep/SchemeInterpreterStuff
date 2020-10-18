@@ -16,19 +16,8 @@
 ;; <let-exp> ::= (let ({(identifier <LcExp>)}*) {LcExp}*)
 
 
-(let* ([test
-       '(cond
-         [p1 r1]
-         [p2 r2]
-         [p3 r3]
-         [p4 r4]
-         [else r5])]
-       [preds (map car (cdr test))]
-       [resps (map cadr (cdr test))])
-  )
-
-
-
+; NOTE: preds and resps are the map of car and cdr for cond, resp.
+; TODO: implement cond let let* letrec or and syntax-expansion
 
 (define parse-exp
   (lambda (datum)

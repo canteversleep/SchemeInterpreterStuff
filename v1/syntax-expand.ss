@@ -34,8 +34,15 @@
              [else (if-exp (syntax-expand (car preds))
                            (syntax-expand (car preds))
                            (syntax-expand (or-exp (cdr preds))))])]
+           [cond-exp
+            (preds exprs)
+            (cond
+             [(null? preds)
+              (if ()
+                  ()
+                  ())]
+             [else ()])]
            [case-exp (groups exprs)]
-           [cond-exp (preds exprs)]
            [begin-exp (exps)]
            [else expr])))
 
