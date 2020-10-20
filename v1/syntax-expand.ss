@@ -59,7 +59,7 @@
                  (if (eqv? x 'else)
                      'else
                      (or-exp
-                      (map (lambda (x) (eqv? x key)) x)))) groups)
+                      (map (lambda (x) (app-exp (var-exp 'eqv?)  (list key x))) x)))) groups)
               exprs))]
            [begin-exp
             (exprs)
@@ -70,15 +70,20 @@
            [lambda-exp (formals bodies) (lambda-exp formals (map syntax-expand bodies))]
            [app-exp (rator rands) (app-exp (syntax-expand rator) (map syntax-expand rands))]
            [set!-exp (id val-exp) (set!-exp id (syntax-expand val-exp))]
-           [if-exp (test consequent alternative) (if-exp (syntax-expand test) (syntax-expand consequent) (syntax-expand alternative))]
+           [if-exp (test consequent alternative)
+                   (if-exp (syntax-expand test)
+                           (syntax-expand consequent)
+                           (if alternative (syntax-expand alternative) #f))]
            [unspecified-exp () unspecified-exp])))
 
 ;; ;; A bunch of helpers for the expander
 
 
 
-(map car (cdr
- '(case
- [(null? '(12 3)) 'some]
- [(car '(#t)) 'other]
+
+
+(map car (cddr
+ '(case hell
+ [(1 2 3 4) 'some]
+ [(5 6 7 8) 'other]
  [else #f])))

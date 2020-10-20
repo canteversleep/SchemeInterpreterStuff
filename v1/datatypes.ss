@@ -92,14 +92,17 @@
    (resps (list-of (list-of expression?)))]
   [case-exp
    (key expression?)
-   (groups (lambda (x) (andmap (lambda (x) ((list-of expression?) x)) x)))
-   (preds (list-of expression?))]
+   (groups (lambda (x) (andmap (lambda (x) (or ((list-of expression?) x) (eqv? 'else x))) x)))
+   (exprs (lambda (x) (map (list-of expression?) x)))]
   [or-exp
    (preds (list-of expression?))]
   [and-exp
    (preds (list-of expression?))]
   [begin-exp
    (exps (list-of expression?))]
+  [while-exp
+   (test expression?)
+   (bodies (list-of expression?))]
   [unspecified-exp])
 
 

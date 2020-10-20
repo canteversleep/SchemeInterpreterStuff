@@ -130,7 +130,10 @@
                   [resps (map (lambda (x) (map parse-exp x)) (map cdr (cdr datum)))])
               (cond-exp preds resps))]
            [(eqv? 'case (1st datum))
-            (let ([groups (map car (cddr datum))]
+            (let ([groups (map (lambda (x) (if (eqv? 'else x)
+                                               'else
+                                               (map parse-exp x)))
+                               (map car (cddr datum)))]
                   [exprs (map (lambda (x) (map parse-exp x)) (map cdr (cddr datum)))])
              (case-exp (parse-exp (2nd datum))
                        groups
