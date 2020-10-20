@@ -18,8 +18,8 @@
                 [(null? vars) (let-exp #f '() '() bodies 'let)]
                 [else
                  (let-exp
-                  (car vars) (car exprs)
-                  (syntax-expand (let-exp #f (cdr vars) (cdr exprs) bodies 'let*)) 'let)]))])]
+                  #f (list (car vars)) (list (car exprs))
+                  (list (syntax-expand (let-exp #f (cdr vars) (cdr exprs) bodies 'let*))) 'let)]))])]
            [and-exp
             (preds)
             (cond
@@ -40,7 +40,7 @@
             (preds exprs)
             (cond
              [(null? preds)
-              (if (null? (exprs))
+              (if (null? exprs)
                   (unspecified-exp)
                   (syntax-expand (begin-exp (car exprs))))]
              [(eq? 'else (car preds))
@@ -77,7 +77,7 @@
                    (if-exp (syntax-expand test)
                            (syntax-expand consequent)
                            (if alternative (syntax-expand alternative) #f))]
-           [unspecified-exp () unspecified-exp])))
+           [unspecified-exp () (unspecified-exp)])))
 
 ;; ;; A bunch of helpers for the expander
 
