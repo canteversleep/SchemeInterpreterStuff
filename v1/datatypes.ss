@@ -91,13 +91,17 @@
    (preds (list-of expression?))
    (resps (list-of expression?))]
   [case-exp
-   (groups (lambda (x) (andmap (lambda (x) ((list-of symbol?) x)) x)))]
+   (key expression?)
+   (groups (lambda (x) (andmap (lambda (x) ((list-of symbol?) x)) x)))
+   (preds (list-of expression?))]
   [or-exp
    (preds (list-of expression?))]
   [and-exp
    (preds (list-of expression?))]
   [begin-exp
-   (exps (list-of expression?))])
+   (exps (list-of expression?))]
+  [unspecified-exp])
+
 
 ;; environment type definitions
 ;; TODO: implement env based on different chosen representation later.

@@ -9,7 +9,7 @@
            [let-exp
             (name vars exprs bodies let-var)
             (case let-var
-              [(let) (app-exp (lambda-exp vars (syntax-expand bodies)) (syntax-expand exprs))]
+              [(let) (app-exp (lambda-exp vars (map syntax-expand bodies)) (map syntax-expand exprs))]
               [(let*)
                (syntax-expand
                 (cond
@@ -38,12 +38,26 @@
             (preds exprs)
             (cond
              [(null? preds)
-              (if ()
-                  ()
-                  ())]
-             [else ()])]
-           [case-exp (groups exprs)]
-           [begin-exp (exps)]
+              (if (null? (exprs))
+                  (unspecified-exp)
+                  (syntax-expand (begin-exp (car exprs))))]
+             [(eq? 'else (car preds))
+              (syntax-expand (begin-exp (car exprs)))]
+             [else
+              (syntax-expand
+               (if-exp (car preds)
+                       (begin-exp (car exprs))
+                       (cond-exp (cdr preds) (cdr exprs))))])]
+           [case-exp
+            (key groups exprs)
+            (syntax-expand
+             (cond-exp
+              ()
+              (map syntax-expand exprs)))]
+           [begin-exp
+            (exps)
+            (syntax-expand
+             (let-exp #f '() '() (map syntax-expand bodies) 'let))]
            [else expr])))
 
-;; A bunch of helpers for the expander
+;; ;; A bunch of helpers for the expander
