@@ -3,7 +3,14 @@
 ;; for enhanced evaluation.
 ;; currently planned to include: cond case and or let and let*
 
+
 (define syntax-expand
+  (lambda (expr)
+    (case (car expr)
+      [(let-exp and-exp or-exp cond-exp case-exp begin-exp) (syntax-expand-eopl expr)]
+      [else expr])))
+
+(define syntax-expand-eopl
   (lambda (expr)
     (cases expression expr
            [let-exp
@@ -52,12 +59,16 @@
             (key groups exprs)
             (syntax-expand
              (cond-exp
-              ()
-              (map syntax-expand exprs)))]
+              (map
+               (lambda (x)
+                 (if (eqv? x 'else)
+                     'else
+                     (or-exp
+                      (map (lambda (x) (eqv? x key)))))))
+              exprs))]
            [begin-exp
             (exps)
             (syntax-expand
-             (let-exp #f '() '() (map syntax-expand bodies) 'let))]
-           [else expr])))
+             (let-exp #f '() '() bodies 'let))])))
 
 ;; ;; A bunch of helpers for the expander
