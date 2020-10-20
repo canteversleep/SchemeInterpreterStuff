@@ -45,6 +45,12 @@
                                         (eval-rands exps env)
                                         env)))]
                       [else (eopl:error 'eval-exp "Yet to be implemented")])]
+           [while-exp (test bodies)
+                      (if (eval-exp test env)
+                          (begin
+                            (for-each (lambda (x) (eval-exp x env)) bodies)
+                            (eval-exp (while-exp test bodies) env)))]
+           [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
 ; evaluate the list of operands, putting results into a list

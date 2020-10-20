@@ -138,6 +138,8 @@
              (case-exp (parse-exp (2nd datum))
                        groups
                        exprs))]
+           [(eqv? 'while (1st datum))
+            (while-exp (parse-exp (2nd datum)) (map parse-exp (cddr datum)))]
            [else (app-exp (parse-exp (1st datum))
                           (if (null? (cdr datum))
                               '()
