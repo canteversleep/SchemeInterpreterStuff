@@ -4,13 +4,8 @@
 ;; currently planned to include: cond case and or let and let*
 
 
-(define syntax-expand
-  (lambda (expr)
-    (case (car expr)
-      [(let-exp and-exp or-exp cond-exp case-exp begin-exp) (syntax-expand-eopl expr)]
-      [else expr])))
 
-(define syntax-expand-eopl
+(define syntax-expand
   (lambda (expr)
     (cases expression expr
            [let-exp
@@ -64,11 +59,26 @@
                  (if (eqv? x 'else)
                      'else
                      (or-exp
-                      (map (lambda (x) (eqv? x key)))))))
+                      (map (lambda (x) (eqv? x key)) x)))) groups)
               exprs))]
            [begin-exp
-            (exps)
+            (exprs)
             (syntax-expand
-             (let-exp #f '() '() bodies 'let))])))
+             (let-exp #f '() '() exprs 'let))]
+           [var-exp (id) (var-exp id)]
+           [lit-exp (val) (lit-exp val)]
+           [lambda-exp (formals bodies) (lambda-exp formals (map syntax-expand bodies))]
+           [app-exp (rator rands) (app-exp (syntax-expand rator) (map syntax-expand rands))]
+           [set!-exp (id val-exp) (set!-exp id (syntax-expand val-exp))]
+           [if-exp (test consequent alternative) (if-exp (syntax-expand test) (syntax-expand consequent) (syntax-expand alternative))]
+           [unspecified-exp () unspecified-exp])))
 
 ;; ;; A bunch of helpers for the expander
+
+
+
+(map car (cdr
+ '(case
+ [(null? '(12 3)) 'some]
+ [(car '(#t)) 'other]
+ [else #f])))

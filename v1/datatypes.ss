@@ -88,11 +88,11 @@
    (bodies (list-of expression?))
    (let-variant symbol?)]
   [cond-exp
-   (preds (list-of expression?))
-   (resps (list-of expression?))]
+   (preds (list-of (lambda (x) (or (eqv? 'else x) (expression? x)))))
+   (resps (list-of (list-of expression?)))]
   [case-exp
    (key expression?)
-   (groups (lambda (x) (andmap (lambda (x) ((list-of symbol?) x)) x)))
+   (groups (lambda (x) (andmap (lambda (x) ((list-of expression?) x)) x)))
    (preds (list-of expression?))]
   [or-exp
    (preds (list-of expression?))]

@@ -22,7 +22,10 @@
 (define parse-exp
   (lambda (datum)
     (cond
-     [(symbol? datum) (var-exp datum)]
+     [(symbol? datum)
+      (if (eqv? 'else datum)
+          'else
+          (var-exp datum))]
      [(literal? datum) (lit-exp datum)]
      [(pair? datum)
       (if (list? datum)
@@ -115,7 +118,23 @@
                         (map parse-exp (map 2nd (2nd datum)))
                         (map parse-exp (cddr datum))
                         let-type)]))
-                 (error-reporter 'let-length datum)))]
+                  (error-reporter 'let-length datum)))]
+           [(eqv? 'and (1st datum))
+            (and-exp (map parse-exp (cdr datum)))]
+           [(eqv? 'or (1st datum))
+            (or-exp (map parse-exp (cdr datum)))]
+           [(eqv? 'begin (1st datum))
+            (begin-exp (map parse-exp (cdr datum)))]
+           [(eqv? 'cond (1st datum))
+            (let ([preds (map parse-exp (map car (cdr datum)))]
+                  [resps (map (lambda (x) (map parse-exp x)) (map cdr (cdr datum)))])
+              (cond-exp preds resps))]
+           [(eqv? 'case (1st datum))
+            (let ([groups (map car (cddr datum))]
+                  [exprs (map (lambda (x) (map parse-exp x)) (map cdr (cddr datum)))])
+             (case-exp (parse-exp (2nd datum))
+                       groups
+                       exprs))]
            [else (app-exp (parse-exp (1st datum))
                           (if (null? (cdr datum))
                               '()
