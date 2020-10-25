@@ -132,6 +132,26 @@
    (current-env environment?)])
 
 ; cell ADT
+; DONE: fix
 
-(define-datatype cell cell?
-  [])
+;; (define cell
+;;   (lambda (v)
+;;     (cons v '::CELLMARK::)))
+
+;; (define cell-ref car)
+;; (define deref cell-ref)
+
+;; (define cell-set! set-car!)
+;; (define set-ref! cell-set!)
+
+;; (define cell?
+;;   (lambda (pc)
+;;     (and (pair? pc) (eq? (cdr pc) '::CELLMARK::))))
+
+(define cell box)
+(define cell? box?)
+(define cell-ref unbox)
+(define cell-set! set-box!)
+
+(define deref cell-ref)
+(define set-ref! cell-set!)
