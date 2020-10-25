@@ -7,7 +7,7 @@
 
 (define extend-env
   (lambda (syms vals env)
-    (extended-env-record syms vals env)))
+    (extended-env-record syms (map cell vals) env))) ; map cell vals simply gives us cells instead of values
 
 (define list-find-position
   (lambda (sym los)
@@ -16,19 +16,32 @@
 	    [(eq? sym (car los)) pos]
 	    [else (loop (cdr los) (add1 pos))]))))
 	    
-(define apply-env
-  (lambda (env sym) 
-    (cases environment env 
-      [empty-env-record ()      
-        (apply-global-env sym)]
-      [extended-env-record (syms vals env)
-	(let ((pos (list-find-position sym syms)))
-      	  (if (number? pos)
-              (list-ref vals pos)
-              (apply-env env sym)))])))
-
-;; TODO: add apply-env-ref
+;; DONE: add apply-env-ref
 ;; change apply-env to (deref (apply-env-ref env sym))
+;; note that what is now done is that apply-env dereferences
+;; whatever address is returned to it from apply-env-ref
+;; you will note that apply-env-ref contains the same
+;; code as the previous apply-env did. this is because
+;; we now return the cells associated, as you see with
+;; extend-env
+
+(define apply-env-ref
+  (lambda (env sym)
+    (cases environment env
+           [empty-env-record
+            ()
+            (apply-global-env sym)]
+           [extended-env-record
+            (syms vals env)
+            (let ((pos (list-find-position sym syms)))
+              (if (number? pos)
+                (list-ref vals pos)
+                (apply-env env sym)))])))
+
+
+(define apply-env
+  (lambda (env var)
+    (deref (apply-env-ref env var))))
 
 (define apply-global-env
   (lambda (sym)

@@ -130,3 +130,8 @@
    (ids scheme-value?)
    (bodies (list-of expression?))
    (current-env environment?)])
+
+; cell ADT
+
+(define-datatype cell cell?
+  [])
