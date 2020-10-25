@@ -106,7 +106,7 @@
                     (case let-type
                       [(named)
                        (let-exp
-                        (parse-exp (2nd datum))
+                        (2nd datum)
                         (map 1st (3rd datum))
                         (map parse-exp (map 2nd (3rd datum)))
                         (map parse-exp (cdddr datum))

@@ -11,7 +11,13 @@
            [let-exp
             (name vars exprs bodies let-var)
             (case let-var
-              [(let) (app-exp (lambda-exp vars (map syntax-expand bodies)) (map syntax-expand exprs))]
+              [(let)
+               (if name
+                   (syntax-expand
+                    (app-exp
+                     (let-exp #f (list name) (list (lambda-exp vars bodies)) (list (var-exp name)) 'letrec)
+                     exprs))
+                   (app-exp (lambda-exp vars (map syntax-expand bodies)) (map syntax-expand exprs)))]
               [(let*)
                (syntax-expand
                 (cond
@@ -20,7 +26,13 @@
                  (let-exp
                   #f (list (car vars)) (list (car exprs))
                   (list (syntax-expand (let-exp #f (cdr vars) (cdr exprs) bodies 'let*))) 'let)]))]
-              [(letrec)])]
+              [(letrec)
+               (syntax-expand
+                (let-exp #f vars (make-list (length vars) (lit-exp #f))
+                         (list (let-exp #f (make-temp-vars (length vars)) (map syntax-expand exprs)
+                                  (append
+                                   (map set!-exp vars (map parse-exp (make-temp-vars (length vars))))
+                                   (list (let-exp #f '() '() bodies 'let))) 'let)) 'let))])]
            [and-exp
             (preds)
             (cond
@@ -82,7 +94,14 @@
 
 ;; ;; A bunch of helpers for the expander
 
-
+(define make-temp-vars
+  (lambda (n)
+    (map string->symbol
+         (map string-append
+              (map string-append
+                   (make-list n "::TEMP")
+                   (map number->string (iota n)))
+              (make-list n "::")))))
 
 
 

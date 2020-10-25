@@ -154,4 +154,4 @@
 (define cell-set! set-box!)
 
 (define deref cell-ref)
-(define set-ref! cell-set!)
+(define set!-ref cell-set!)

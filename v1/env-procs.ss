@@ -36,7 +36,7 @@
             (let ((pos (list-find-position sym syms)))
               (if (number? pos)
                 (list-ref vals pos)
-                (apply-env env sym)))])))
+                (apply-env-ref env sym)))])))
 
 
 (define apply-env
