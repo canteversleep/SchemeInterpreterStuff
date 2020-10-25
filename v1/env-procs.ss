@@ -27,6 +27,8 @@
               (list-ref vals pos)
               (apply-env env sym)))])))
 
+;; TODO: add apply-env-ref
+;; change apply-env to (deref (apply-env-ref env sym))
 
 (define apply-global-env
   (lambda (sym)

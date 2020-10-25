@@ -19,7 +19,8 @@
                 [else
                  (let-exp
                   #f (list (car vars)) (list (car exprs))
-                  (list (syntax-expand (let-exp #f (cdr vars) (cdr exprs) bodies 'let*))) 'let)]))])]
+                  (list (syntax-expand (let-exp #f (cdr vars) (cdr exprs) bodies 'let*))) 'let)]))]
+              [(letrec)])]
            [and-exp
             (preds)
             (cond

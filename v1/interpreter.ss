@@ -26,7 +26,10 @@
                     (let ([proc-value (eval-exp rator env)]
                           [args (eval-rands rands env)])
                       (apply-proc proc-value args))]
-           ;[set!]
+           [set!-exp (id exp)
+                     (set!-ref
+                      (apply-env-ref env id)
+                      (eval-exp exp env))]
            [if-exp (test consequent alternative)
                    (if alternative
                        (if (eval-exp test env)
