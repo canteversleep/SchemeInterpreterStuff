@@ -4,7 +4,14 @@
 (define 2nd cadr)
 (define 3rd caddr)
 (define 4th cadddr)
-
+(define (5th x)
+  (4th (cdr x)))
+(define (6th x)
+  (4th (cddr x)))
+(define (7th x)
+  (4th (cdddr x)))
+(define (8th x)
+  (4th (cddddr x)))
 
 ;; We rely on the extended grammer defined with A10
 ;; <LcExp> ::= <var-exp> | <lambda-exp> | <app-exp> | <if-exp> | <set-exp> | <let-exp>
@@ -140,6 +147,13 @@
                        exprs))]
            [(eqv? 'while (1st datum))
             (while-exp (parse-exp (2nd datum)) (map parse-exp (cddr datum)))]
+           [(eqv? 'for (1st datum))
+            (for-exp
+             (2nd datum)
+             (parse-exp (4th datum))
+             (parse-exp (6th datum))
+             (parse-exp (8th datum))
+             (5th datum))]
            [else (app-exp (parse-exp (1st datum))
                           (if (null? (cdr datum))
                               '()
