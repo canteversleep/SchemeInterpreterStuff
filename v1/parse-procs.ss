@@ -154,6 +154,10 @@
              (parse-exp (6th datum))
              (parse-exp (8th datum))
              (5th datum))]
+           [(eqv? 'define (1st datum))
+            (def-exp
+              (2nd datum)
+              (parse-exp (3rd datum)))]
            [else (app-exp (parse-exp (1st datum))
                           (if (null? (cdr datum))
                               '()

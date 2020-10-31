@@ -74,6 +74,9 @@
   [app-exp
    (rator expression?)
    (rands (list-of expression?))]
+  [def-exp
+   (id symbol?)
+   (definition expression?)]
   [set!-exp
    (id symbol?)
    (val-exp expression?)]
