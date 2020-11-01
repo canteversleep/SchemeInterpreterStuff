@@ -5,11 +5,11 @@
 
 (define global-env
   (lambda ()
-    (let ([nenv (global-env-record '() '())])
+    (let ([nenv (global-env-record (cell '()) (cell '()))])
       (extend-global-env
        *prim-proc-names*
        (map prim-proc *prim-proc-names*)
-       (global-env-record (cell '()) (cell'())))
+       nenv)
       nenv)))
 
 (define top-level-eval
