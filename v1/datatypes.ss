@@ -127,7 +127,10 @@
   (extended-env-record
    (syms (list-of symbol?))
    (vals (list-of scheme-value?))
-   (env environment?)))
+   (env environment?))
+  (global-env-record
+   (syms (list-of symbol?))
+   (vals (list-of scheme-value?))))
 
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.

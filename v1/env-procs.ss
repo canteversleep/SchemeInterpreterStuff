@@ -28,32 +28,68 @@
 (define apply-env-ref
   (lambda (env sym)
     (cases environment env
-           [empty-env-record
-            ()
-            (apply-global-env sym)]
            [extended-env-record
             (syms vals env)
             (let ((pos (list-find-position sym syms)))
               (if (number? pos)
                 (list-ref vals pos)
-                (apply-env-ref env sym)))])))
+                (apply-env-ref env sym)))]
+           [global-env-record
+            (syms vals)
+            (let ((pos (list-find-position sym syms)))
+              (if (number? pos)
+                  (list-ref vals pos)
+                  (eopl:error 'global-env "Symbol ~s is not bound in the global environment" sym)))]
+           [empty-env-record
+            ()
+            (eopl:error 'global-env "Fatal error: global environment improperly constructed")])))
 
 
 (define apply-env
   (lambda (env var)
     (deref (apply-env-ref env var))))
 
+
+;;
 (define apply-global-env
   (lambda (sym)
-    (cases environment init-env
-           [extended-env-record
-            (syms vals env)
-            (let ([pos (list-find-position sym syms)])
-              (if (number? pos)
-                  (list-ref vals pos)
-                  (eopl:error 'global-env
-                              "Symbol ~s is not bound in the global environment"
-                              sym)))]
-           [empty-env-record
-            ()
-            (eopl:error 'global-env "Fatal error: global environment improperly extended")])))
+    (eopl:error 'global-env "apply-global-env should not be called")))
+    ;; (cases environment init-env
+    ;;        [extended-env-record
+    ;;         (syms vals env)
+    ;;         (let ([pos (list-find-position sym syms)])
+    ;;           (if (number? pos)
+    ;;               (list-ref vals pos)
+    ;;               (eopl:error 'global-env
+    ;;                           "Symbol ~s is not bound in the global environment"
+    ;;                           sym)))]
+    ;;        [empty-env-record
+    ;;         ()
+    ;;         (eopl:error 'global-env "Fatal error: global environment improperly extended")])))
+
+(define extend-global-env
+  (lambda (syms vals env)
+    (letrec ([merge
+              (lambda (syms vals o-syms o-vals)
+                (if (null? syms)
+                    (void)
+                    (let ([pos (list-find-position (car syms) o-syms)])
+                      (if (number? pos)
+                          (begin
+                            (set!-ref
+                             (list-ref o-vals pos)
+                             (car vals))
+                            (merge (cdr syms) (cdr vals) o-syms o-vals))
+                          (begin
+                            (set! o-syms (cons (car syms) o-syms))
+                            (set! o-vals (cons (cell (car vals)) o-vals)))))))])
+      (cases environment env
+             [extended-env-record
+              (o-syms o-vals env)
+              (extend-global-env syms vals env)]
+             [global-env-record
+              (o-syms o-vals)
+              (merge syms vals o-syms o-vals)]
+             [empty-env
+              ()
+              (eopl:error 'global-env "Fatal error: environments improperly extended")]))))

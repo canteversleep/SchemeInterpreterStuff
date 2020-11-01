@@ -3,7 +3,12 @@
 
 ;; our global environment starts out as the empty environment but can be expanded
 
-(define global-env empty-env)
+(define global-env
+  (lambda ()
+    (extend-global-env
+     *prim-proc-names*
+     (map prim-proc *prim-proc-names*)
+     (global-env-record '() '()))))
 
 (define top-level-eval
   (lambda (form)
@@ -81,7 +86,7 @@
                      env))))]
            [def-exp
              (id definition)
-             (extend-env global-env)]
+             (extend-env )]
            [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
