@@ -13,62 +13,75 @@
 ;; TODO: Add all grammar forms for initial implementation of eval-exp
 ;; NOTE: overridden later with syntax expander. Currently we evaluate everything as part of original grammar. Later, all exps will be converted to core form
 (define eval-exp
-  (lambda (exp env) 
+  (lambda (exp env)
     (cases expression exp
-           [lit-exp (datum) (if (nqatom? datum)
-                                datum
-                                (cadr datum))]
-           [var-exp (id)
-                    (apply-env env id)]
-           [lambda-exp (ids bodies)
-                       (closure ids bodies env)]
-           [app-exp (rator rands)
-                    (let ([proc-value (eval-exp rator env)]
-                          [args (eval-rands rands env)])
-                      (apply-proc proc-value args))]
-           [set!-exp (id exp)
-                     (set!-ref
-                      (apply-env-ref env id)
-                      (eval-exp exp env))]
-           [if-exp (test consequent alternative)
-                   (if alternative
-                       (if (eval-exp test env)
-                           (eval-exp consequent env)
-                           (eval-exp alternative env))
-                       (if (eval-exp test env)
-                           (eval-exp consequent env)))]
-           [let-exp (name vars exps bodies variant)
-                    (case variant
-                      [(let)
-                       (if name
-                           (eopl:error 'eval-exp "Yet to be implemented")
-                           (eval-bodies
-                            bodies
-                            (extend-env vars
-                                        (eval-rands exps env)
-                                        env)))]
-                      [else (eopl:error 'eval-exp "Yet to be implemented")])]
-           [while-exp (test bodies)
-                      (if (eval-exp test env)
-                          (begin
-                            (for-each (lambda (x) (eval-exp x env)) bodies)
-                            (eval-exp (while-exp test bodies) env)))]
-           [for-exp (var beginning end doing upordown)
-                    (let ([nb (eval-exp beginning env)]
-                          [ne (eval-exp end env)]
-                          [isup (eq? 'to upordown)])
-                      (if (if isup (>= nb (add1 ne)) (<= (add1 nb) ne))
-                          (void)
-                          (begin
-                            (eval-exp doing (extend-env (list var) (list (if isup nb ne)) env))
-                            (eval-exp
-                             (for-exp
-                              var
-                              (if isup (lit-exp (add1 nb)) (lit-exp nb))
-                              (if isup (lit-exp ne) (lit-exp (add1 ne)))
-                              doing
-                              upordown)
-                             env))))]
+           [lit-exp
+            (datum)
+            (if (nqatom? datum)
+                datum
+                (cadr datum))]
+           [var-exp
+            (id)
+            (apply-env env id)]
+           [lambda-exp
+            (ids bodies)
+            (closure ids bodies env)]
+           [app-exp
+            (rator rands)
+            (let ([proc-value (eval-exp rator env)]
+                  [args (eval-rands rands env)])
+              (apply-proc proc-value args))]
+           [set!-exp
+            (id exp)
+            (set!-ref
+             (apply-env-ref env id)
+             (eval-exp exp env))]
+           [if-exp
+            (test consequent alternative)
+            (if alternative
+                (if (eval-exp test env)
+                    (eval-exp consequent env)
+                    (eval-exp alternative env))
+                (if (eval-exp test env)
+                    (eval-exp consequent env)))]
+           [let-exp
+            (name vars exps bodies variant)
+            (case variant
+              [(let)
+               (if name
+                   (eopl:error 'eval-exp "Yet to be implemented")
+                   (eval-bodies
+                    bodies
+                    (extend-env vars
+                                (eval-rands exps env)
+                                env)))]
+              [else (eopl:error 'eval-exp "Yet to be implemented")])]
+           [while-exp
+            (test bodies)
+            (if (eval-exp test env)
+                (begin
+                  (for-each (lambda (x) (eval-exp x env)) bodies)
+                  (eval-exp (while-exp test bodies) env)))]
+           [for-exp
+            (var beginning end doing upordown)
+            (let ([nb (eval-exp beginning env)]
+                  [ne (eval-exp end env)]
+                  [isup (eq? 'to upordown)])
+              (if (if isup (>= nb (add1 ne)) (<= (add1 nb) ne))
+                  (void)
+                  (begin
+                    (eval-exp doing (extend-env (list var) (list (if isup nb ne)) env))
+                    (eval-exp
+                     (for-exp
+                      var
+                      (if isup (lit-exp (add1 nb)) (lit-exp nb))
+                      (if isup (lit-exp ne) (lit-exp (add1 ne)))
+                      doing
+                      upordown)
+                     env))))]
+           [def-exp
+             (id definition)
+             (extend-env global-env)]
            [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 

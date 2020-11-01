@@ -97,6 +97,10 @@
                      (syntax-expand end)
                      (syntax-expand doing)
                      upordown)]
+           [def-exp (id definition)
+             (def-exp
+               id
+               (syntax-expand definition))]
            [unspecified-exp () (unspecified-exp)])))
 
 ;; ;; A bunch of helpers for the expander
