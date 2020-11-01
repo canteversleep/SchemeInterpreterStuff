@@ -82,10 +82,10 @@
                              (list-ref o-vals pos)
                              (car vals))
                             (merge (cdr syms) (cdr vals) o-syms o-vals))
-                          (begin
-                            (set! o-syms (cons (car syms) o-syms))
-                            (set! o-vals (cons (cell (car vals)) o-vals))
-                            (merge (cdr syms) (cdr vals) o-syms o-vals))))))])
+                          (merge (cdr syms)
+                                 (cdr vals)
+                                 (cons (car syms) o-syms)
+                                 (cons (cell (car vals)) o-vals))))))])
       (cases environment env
              [extended-env-record
               (o-syms o-vals env)
@@ -98,3 +98,15 @@
              [empty-env-record
               ()
               (eopl:error 'global-env "Fatal error: environments improperly extended")]))))
+
+
+(define reset-global-env
+  (lambda ()
+    (set! global-env
+      ((lambda ()
+         (let ([nenv (global-env-record (cell '()) (cell '()))])
+           (extend-global-env
+            *prim-proc-names*
+            (map prim-proc *prim-proc-names*)
+            nenv)
+           nenv))))))
