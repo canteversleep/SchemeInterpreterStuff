@@ -156,7 +156,7 @@
                               equal? length list->vector list? pair? vector->list vector?
                               number? symbol? caar cadr cadar procedure? set-car! set-cdr!
                               apply map vector vector-ref > < <= vector-set! eqv? quotient
-                              append list-tail))
+                              append list-tail assq))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
@@ -214,6 +214,7 @@
       [(quotient) (apply quotient args)]
       [(append) (apply append args)]
       [(list-tail) (apply list-tail args)]
+      [(assq) (apply assq args)]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))

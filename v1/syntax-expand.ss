@@ -46,9 +46,11 @@
             (cond
              [(null? preds) (lit-exp #f)]
              [(null? (cdr preds)) (syntax-expand (car preds))]
-             [else (if-exp (syntax-expand (car preds))
-                           (syntax-expand (car preds))
-                           (syntax-expand (or-exp (cdr preds))))])]
+             [else (syntax-expand
+                    (let-exp #f '(a) (list (car preds))
+                    (list (if-exp (var-exp 'a)
+                                  (var-exp 'a)
+                                  (syntax-expand (or-exp (cdr preds))))) 'let))])]
            [cond-exp
             (preds exprs)
             (cond
