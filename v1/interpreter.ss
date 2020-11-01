@@ -5,14 +5,16 @@
 
 (define global-env
   (lambda ()
-    (extend-global-env
-     *prim-proc-names*
-     (map prim-proc *prim-proc-names*)
-     (global-env-record '() '()))))
+    (let ([nenv (global-env-record '() '())])
+      (extend-global-env
+       *prim-proc-names*
+       (map prim-proc *prim-proc-names*)
+       (global-env-record (cell '()) (cell'())))
+      nenv)))
 
 (define top-level-eval
   (lambda (form)
-    (eval-exp form (empty-env))))
+    (eval-exp form (global-env))))
 
 ; eval-exp is the main component of the interpreter
 ;; TODO: Add all grammar forms for initial implementation of eval-exp
@@ -86,7 +88,7 @@
                      env))))]
            [def-exp
              (id definition)
-             (extend-env )]
+             (extend-global-env (list id) (list (eval-exp definition env)) env)]
            [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 

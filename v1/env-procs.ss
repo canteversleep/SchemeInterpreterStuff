@@ -36,10 +36,12 @@
                 (apply-env-ref env sym)))]
            [global-env-record
             (syms vals)
-            (let ((pos (list-find-position sym syms)))
-              (if (number? pos)
-                  (list-ref vals pos)
-                  (eopl:error 'global-env "Symbol ~s is not bound in the global environment" sym)))]
+            (let ([syms (deref syms)]
+                  [vals (deref vals)])
+              (let ((pos (list-find-position sym syms)))
+                (if (number? pos)
+                    (list-ref vals pos)
+                    (eopl:error 'global-env "Symbol ~s is not bound in the global environment" sym))))]
            [empty-env-record
             ()
             (eopl:error 'global-env "Fatal error: global environment improperly constructed")])))
@@ -72,7 +74,7 @@
     (letrec ([merge
               (lambda (syms vals o-syms o-vals)
                 (if (null? syms)
-                    (void)
+                    (cons o-syms o-vals)
                     (let ([pos (list-find-position (car syms) o-syms)])
                       (if (number? pos)
                           (begin
@@ -82,14 +84,17 @@
                             (merge (cdr syms) (cdr vals) o-syms o-vals))
                           (begin
                             (set! o-syms (cons (car syms) o-syms))
-                            (set! o-vals (cons (cell (car vals)) o-vals)))))))])
+                            (set! o-vals (cons (cell (car vals)) o-vals))
+                            (merge (cdr syms) (cdr vals) o-syms o-vals))))))])
       (cases environment env
              [extended-env-record
               (o-syms o-vals env)
               (extend-global-env syms vals env)]
              [global-env-record
               (o-syms o-vals)
-              (merge syms vals o-syms o-vals)]
-             [empty-env
+              (let ([new (merge syms vals (deref o-syms) (deref o-vals))])
+                (set!-ref o-syms (car new))
+                (set!-ref o-vals (cdr new)))]
+             [empty-env-record
               ()
               (eopl:error 'global-env "Fatal error: environments improperly extended")]))))

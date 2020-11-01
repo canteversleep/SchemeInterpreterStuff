@@ -129,8 +129,8 @@
    (vals (list-of scheme-value?))
    (env environment?))
   (global-env-record
-   (syms (list-of symbol?))
-   (vals (list-of scheme-value?))))
+   (syms cell?)
+   (vals cell?)))
 
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.
