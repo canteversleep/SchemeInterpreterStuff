@@ -1,5 +1,11 @@
 ; top-level-eval evaluates a form in the global environment
 
+(define *prim-proc-names* '(+ - * add1 sub1 cons = / zero? not >= car cdr list null? eq?
+                              equal? length list->vector list? pair? vector->list vector?
+                              number? symbol? caar cadr cadar procedure? set-car! set-cdr!
+                              apply map vector vector-ref > < <= vector-set! eqv? quotient
+                              append list-tail assq))
+
 
 ;; our global environment starts out as the empty environment but can be expanded
 
@@ -129,7 +135,7 @@
                              args ;note that we do not evaluate the args as that was already done
                              env))]
            [else (error 'apply-proc
-                   "Attempt to apply bad procedure: ~s" 
+                   "Attempt to apply bad procedure: ~s"
                    proc-value)])))
 
 ; Closure helper for variables ids
@@ -151,12 +157,6 @@
 
 ; helpers for closure-extend
 
-
-(define *prim-proc-names* '(+ - * add1 sub1 cons = / zero? not >= car cdr list null? eq?
-                              equal? length list->vector list? pair? vector->list vector?
-                              number? symbol? caar cadr cadar procedure? set-car! set-cdr!
-                              apply map vector vector-ref > < <= vector-set! eqv? quotient
-                              append list-tail assq))
 
 (define init-env         ; for now, our initial global environment only contains 
   (extend-env            ; procedure names.  Recall that an environment associates
