@@ -107,42 +107,44 @@
            [prim-proc
             (op) (apply-prim-proc op args)]
            [closure
-            (bodies env)
+            (bodies env proper)
             (eval-bodies
              bodies
-             (closure-extend ids
-                             args ;note that we do not evaluate the args as that was already done
-                             env))]
+             (extend-env
+              (cond
+               [(and (zero? proper) (not (null? args)))
+                (list args)]
+               [(zero? proper) '()]
+               [else
+                (let ([proper-args (list-up-until args proper)]
+                      [improper-args ((compose cdr proper) args)])
+                  (if (null? improper-args)
+                      proper-args
+                      (append proper-args (list improper-args))))])
+              env))]
            [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s"
                    proc-value)])))
 
 ; Closure helper for variables ids
-
-(define closure-extend
-  (lambda (ids args env)
-    (cond
-     [(symbol? ids) (extend-env (list ids) (list args) env)]
-     [(null? ids) env]
-     [((list-of symbol?) ids) (extend-env ids args env)]
-     [(improper-safety ids)
-      (let ([when-improper (proper-counter ids)])
-        (extend-env
-         (append (list-up-until ids when-improper) (list ((compose cdr when-improper) ids)))
-         (append
-          (list-up-until args when-improper)
-          (list ((compose cdr when-improper) args)))
-         env))])))
+; not used for lexical branch
+;; (define closure-extend
+;;   (lambda (ids args env)
+;;     (cond
+;;      [(symbol? ids) (extend-env (list ids) (list args) env)]
+;;      [(null? ids) env]
+;;      [((list-of symbol?) ids) (extend-env ids args env)]
+;;      [(improper-safety ids)
+;;       (let ([when-improper (proper-counter ids)])
+;;         (extend-env
+;;          (append (list-up-until ids when-improper) (list ((compose cdr when-improper) ids)))
+;;          (append
+;;           (list-up-until args when-improper)
+;;           (list ((compose cdr when-improper) args)))
+;;          env))])))
 
 ; helpers for closure-extend
 
-
-(define init-env         ; for now, our initial global environment only contains 
-  (extend-env            ; procedure names.  Recall that an environment associates
-     *prim-proc-names*   ;  a value (not an expression) with an identifier.
-     (map prim-proc      
-          *prim-proc-names*)
-     (empty-env)))
 
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
