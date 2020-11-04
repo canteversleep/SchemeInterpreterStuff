@@ -11,7 +11,7 @@
 
 (define global-env
   ((lambda ()
-    (let ([nenv (global-env-record (cell '()) (cell '()))])
+    (let ([nenv (cons (cell '()) (cell '()))])
       (extend-global-env
        *prim-proc-names*
        (map prim-proc *prim-proc-names*)

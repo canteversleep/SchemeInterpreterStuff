@@ -122,15 +122,6 @@
 (define scheme-value?
   (lambda (x) #t))
 
-(define-datatype environment environment?
-  (empty-env-record)
-  (extended-env-record
-   (vals (list-of scheme-value?))
-   (env environment?))
-  (global-env-record
-   (syms cell?)
-   (vals cell?)))
-
 ; datatype for procedures.  At first there is only one
 ; kind of procedure, but more kinds will be added later.
 
@@ -139,7 +130,7 @@
    (name symbol?)]
   [closure
    (bodies (list-of expression?))
-   (current-env environment?)])
+   (current-env list?)])
 
 ; cell ADT
 ; DONE: fix

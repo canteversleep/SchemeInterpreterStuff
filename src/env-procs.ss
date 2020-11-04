@@ -5,6 +5,15 @@
 ; will include free-vars and static environments will contain
 ; all other bound variables
 
+
+
+(define list-find-position
+  (lambda (sym los)
+    (let loop ([los los] [pos 0])
+      (cond [(null? los) #f]
+            [(eq? sym (car los)) pos]
+            [else (loop (cdr los) (add1 pos))]))))
+
 (define empty-env
   (lambda ()
     '()))
@@ -37,26 +46,21 @@
     (deref (apply-env-ref env lxadr))))
 
 
-;;
+;; global environment implementation
+
+
+
 (define apply-global-env
   (lambda (sym)
-    (let ([]))
-    (eopl:error 'global-env "apply-global-env should not be called")))
-    ;; (cases environment init-env
-    ;;        [extended-env-record
-    ;;         (syms vals env)
-    ;;         (let ([pos (list-find-position sym syms)])
-    ;;           (if (number? pos)
-    ;;               (list-ref vals pos)
-    ;;               (eopl:error 'global-env
-    ;;                           "Symbol ~s is not bound in the global environment"
-    ;;                           sym)))]
-    ;;        [empty-env-record
-    ;;         ()
-    ;;         (eopl:error 'global-env "Fatal error: global environment improperly extended")])))
-
+    (let* ([syms (car global-env)]
+           [vals (cdr global-env)]
+           [pos (list-find-position sym syms)])
+      (if (number? pos)
+          (list-ref vals pos)
+          (eopl:error 'global-env "global environment is missing symbol ~s" sym)))))
+   
 (define extend-global-env
-  (lambda (syms vals env)
+  (lambda (syms vals . env)
     (letrec ([merge
               (lambda (syms vals o-syms o-vals)
                 (if (null? syms)
@@ -72,38 +76,22 @@
                                  (cdr vals)
                                  (cons (car syms) o-syms)
                                  (cons (cell (car vals)) o-vals))))))])
-      (cases environment env
-             [extended-env-record
-              (o-syms o-vals env)
-              (extend-global-env syms vals env)]
-             [global-env-record
-              (o-syms o-vals)
-              (let ([new (merge syms vals (deref o-syms) (deref o-vals))])
-                (set!-ref o-syms (car new))
-                (set!-ref o-vals (cdr new)))]
-             [empty-env-record
-              ()
-              (eopl:error 'global-env "Fatal error: environments improperly extended")]))))
+      (let ([genv
+             (if (null? env)
+                 global-env
+                 (car env))])
+        (let* ([o-syms (car genv)]
+               [o-vals (cdr genv)]
+               [new (merge syms vals (deref o-syms) (deref o-vals))])
+          (set!-ref o-syms (car new))
+          (set!-ref o-vals (cdr new)))))))
 
 
 (define reset-global-env
   (lambda ()
-    (set! global-env
-      ((lambda ()
-         (let ([nenv (global-env-record (cell '()) (cell '()))])
-           (extend-global-env
-            *prim-proc-names*
-            (map prim-proc *prim-proc-names*)
-            nenv)
-           nenv))))))
+    (let ([syms (car global-env)]
+          [vals (cdr global-env)])
+      (set!-ref syms *prim-proc-names*)
+      (set!-ref vals (map prim-proc *prim-proc-names*)))))
 
 
-;; not needed for lexical address branch
-;;
-
-;; (define list-find-position
-;;   (lambda (sym los)
-;;     (let loop ([los los] [pos 0])
-;;       (cond [(null? los) #f]
-;; 	    [(eq? sym (car los)) pos]
-;; 	    [else (loop (cdr los) (add1 pos))]))))
