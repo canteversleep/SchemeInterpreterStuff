@@ -125,7 +125,6 @@
 (define-datatype environment environment?
   (empty-env-record)
   (extended-env-record
-   (syms (list-of symbol?))
    (vals (list-of scheme-value?))
    (env environment?))
   (global-env-record
@@ -139,7 +138,6 @@
   [prim-proc
    (name symbol?)]
   [closure
-   (ids scheme-value?)
    (bodies (list-of expression?))
    (current-env environment?)])
 

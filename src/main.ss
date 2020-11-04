@@ -12,6 +12,7 @@
     (load "datatypes.ss")
     (load "parse-procs.ss")
     (load "syntax-expand.ss")
+    (load "lexical-address.ss")
     (load "env-procs.ss")
     (load "continuations.ss")
     (load "interpreter.ss")))

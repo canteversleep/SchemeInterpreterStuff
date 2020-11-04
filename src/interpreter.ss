@@ -57,18 +57,6 @@
                     (eval-exp alternative env))
                 (if (eval-exp test env)
                     (eval-exp consequent env)))]
-           [let-exp
-            (name vars exps bodies variant)
-            (case variant
-              [(let)
-               (if name
-                   (eopl:error 'eval-exp "Yet to be implemented")
-                   (eval-bodies
-                    bodies
-                    (extend-env vars
-                                (eval-rands exps env)
-                                env)))]
-              [else (eopl:error 'eval-exp "Yet to be implemented")])]
            [while-exp
             (test bodies)
             (if (eval-exp test env)

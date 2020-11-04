@@ -1,21 +1,18 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  
 ; Based on EoPL sections 2.2 and  2.3
+; For the lexical address branch, the environment datatype
+; will not be used at all. Rather, a dynamic global environment
+; will include free-vars and static environments will contain
+; all other bound variables
 
 (define empty-env
   (lambda ()
-    (empty-env-record)))
+    '()))
 
 (define extend-env
-  (lambda (syms vals env)
-    (extended-env-record syms (map cell vals) env))) ; map cell vals simply gives us cells instead of values
+  (lambda (vals env)
+    (cons (map cell vals) env))) ; map cell vals simply gives us cells instead of values
 
-(define list-find-position
-  (lambda (sym los)
-    (let loop ([los los] [pos 0])
-      (cond [(null? los) #f]
-	    [(eq? sym (car los)) pos]
-	    [else (loop (cdr los) (add1 pos))]))))
-	    
 ;; DONE: add apply-env-ref
 ;; change apply-env to (deref (apply-env-ref env sym))
 ;; note that what is now done is that apply-env dereferences
@@ -24,6 +21,8 @@
 ;; code as the previous apply-env did. this is because
 ;; we now return the cells associated, as you see with
 ;; extend-env
+;; note that for the lexical address branch, applying an
+;; environment is as simple as calling list-ref
 
 (define apply-env-ref
   (lambda (env sym)
@@ -48,8 +47,8 @@
 
 
 (define apply-env
-  (lambda (env var)
-    (deref (apply-env-ref env var))))
+  (lambda (env lxadr)
+    (deref (apply-env-ref env lxadr))))
 
 
 ;;
@@ -110,3 +109,14 @@
             (map prim-proc *prim-proc-names*)
             nenv)
            nenv))))))
+
+
+;; not needed for lexical address branch
+;;
+
+;; (define list-find-position
+;;   (lambda (sym los)
+;;     (let loop ([los los] [pos 0])
+;;       (cond [(null? los) #f]
+;; 	    [(eq? sym (car los)) pos]
+;; 	    [else (loop (cdr los) (add1 pos))]))))
