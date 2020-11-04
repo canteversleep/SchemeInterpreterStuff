@@ -63,23 +63,6 @@
                 (begin
                   (for-each (lambda (x) (eval-exp x env)) bodies)
                   (eval-exp (while-exp test bodies) env)))]
-           [for-exp
-            (var beginning end doing upordown)
-            (let ([nb (eval-exp beginning env)]
-                  [ne (eval-exp end env)]
-                  [isup (eq? 'to upordown)])
-              (if (if isup (>= nb (add1 ne)) (<= (add1 nb) ne))
-                  (void)
-                  (begin
-                    (eval-exp doing (extend-env (list var) (list (if isup nb ne)) env))
-                    (eval-exp
-                     (for-exp
-                      var
-                      (if isup (lit-exp (add1 nb)) (lit-exp nb))
-                      (if isup (lit-exp ne) (lit-exp (add1 ne)))
-                      doing
-                      upordown)
-                     env))))]
            [def-exp
              (id definition)
              (extend-global-env (list id) (list (eval-exp definition env)) global-env)]

@@ -116,12 +116,6 @@
   [while-exp
    (test expression?)
    (bodies (list-of expression?))]
-  [for-exp
-   (var symbol?)
-   (beginning expression?)
-   (end expression?)
-   (doing expression?)
-   (upordown (lambda (v) (or (eq? v 'to) (eq? v 'downto))))]
   [unspecified-exp])
 
 

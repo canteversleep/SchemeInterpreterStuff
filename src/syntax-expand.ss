@@ -92,13 +92,6 @@
                    (if-exp (syntax-expand test)
                            (syntax-expand consequent)
                            (if alternative (syntax-expand alternative) #f))]
-           [for-exp (var beginning end doing upordown)
-                    (for-exp
-                     var
-                     (syntax-expand beginning)
-                     (syntax-expand end)
-                     (syntax-expand doing)
-                     upordown)]
            [def-exp (id definition)
              (def-exp
                id

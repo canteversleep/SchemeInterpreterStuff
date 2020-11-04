@@ -147,14 +147,7 @@
                        exprs))]
            [(eqv? 'while (1st datum))
             (while-exp (parse-exp (2nd datum)) (map parse-exp (cddr datum)))]
-           [(eqv? 'for (1st datum))
-            (for-exp
-             (2nd datum)
-             (parse-exp (4th datum))
-             (parse-exp (6th datum))
-             (parse-exp (8th datum))
-             (5th datum))]
-           [(eqv? 'define (1st datum))
+          [(eqv? 'define (1st datum))
             (def-exp
               (2nd datum)
               (parse-exp (3rd datum)))]
