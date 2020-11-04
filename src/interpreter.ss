@@ -33,12 +33,15 @@
             (if (nqatom? datum)
                 datum
                 (cadr datum))]
-           [var-exp
+           [bound-var-exp
+            (depth index)
+            (apply-env env `(: ,depth index))]
+           [free-var-exp
             (id)
-            (apply-env env id)]
-           [lambda-exp
-            (ids bodies)
-            (closure ids bodies env)]
+            (apply-env env `(: free ,id))]
+           [lex-lambda-exp
+            (bodies proper improper)
+            (closure bodies env)]
            [app-exp
             (rator rands)
             (let ([proc-value (eval-exp rator env)]
@@ -99,7 +102,7 @@
            [prim-proc
             (op) (apply-prim-proc op args)]
            [closure
-            (ids bodies env)
+            (bodies env)
             (eval-bodies
              bodies
              (closure-extend ids

@@ -16,20 +16,22 @@
            [lambda-exp (formals bodies)
                        (cond
                         [(null? formals)
-                         (lex-lambda-exp (lexer bodies (extend-senv formals senv)))]
+                         (lex-lambda-exp (lexer bodies (extend-senv formals senv)) 0)]
                         [(symbol? formals)
-                         (lex-lambda-exp (lexer bodies (extend-senv (list formals) senv)))]
+                         (lex-lambda-exp (lexer bodies (extend-senv (list formals) senv)) 0)]
                         [((list-of symbol?) formals)
-                         (lex-lambda-exp (lexer bodies (extend-senv formals senv)))]
+                         (lex-lambda-exp (lexer bodies (extend-senv formals senv)) (length formals))]
                         [(improper-safety formals)
                          (let ([when-improper (proper-counter formals)])
                            (lex-lambda-exp
-                            (lexer bodies
+                            (map (lambda (x)
                                    (extend-senv
+                                    x
                                     (append
                                      (list-up-until formals when-improper)
                                      (list ((compose cdr when-improper) formals)))
-                                    senv))))])]
+                                    senv)) bodies)
+                            when-improper))])]
            [app-exp (rator rand)
                     (app-exp (lexer rator senv) (map (lambda (x) (lexer x senv)) rands))]
            [def-exp (id def)

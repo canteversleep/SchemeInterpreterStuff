@@ -77,7 +77,8 @@
           (improper-safety x))))
    (bodies (list-of expression?))]
   [lex-lambda-exp
-   (bodies (list-of expression?))]
+   (bodies (list-of expression?))
+   (num-proper number?)]
   [app-exp
    (rator expression?)
    (rands (list-of expression?))]
@@ -134,7 +135,8 @@
    (name symbol?)]
   [closure
    (bodies (list-of expression?))
-   (current-env list?)])
+   (current-env list?)
+   (nproper number?)])
 
 ; cell ADT
 ; DONE: fix
