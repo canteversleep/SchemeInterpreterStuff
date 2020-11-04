@@ -25,26 +25,12 @@
 ;; environment is as simple as calling list-ref
 
 (define apply-env-ref
-  (lambda (env sym)
-    (cases environment env
-           [extended-env-record
-            (syms vals env)
-            (let ((pos (list-find-position sym syms)))
-              (if (number? pos)
-                (list-ref vals pos)
-                (apply-env-ref env sym)))]
-           [global-env-record
-            (syms vals)
-            (let ([syms (deref syms)]
-                  [vals (deref vals)])
-              (let ((pos (list-find-position sym syms)))
-                (if (number? pos)
-                    (list-ref vals pos)
-                    (eopl:error 'global-env "Symbol ~s is not bound in the global environment" sym))))]
-           [empty-env-record
-            ()
-            (eopl:error 'global-env "Fatal error: global environment improperly constructed")])))
-
+  (lambda (env lxadr)
+    (let ([depth (2nd lxadr)]
+          [index (3rd lxadr)])
+      (if (eq? 'free depth)
+          (apply-global-env index)
+          (list-ref index (list-ref depth env))))))
 
 (define apply-env
   (lambda (env lxadr)
@@ -54,6 +40,7 @@
 ;;
 (define apply-global-env
   (lambda (sym)
+    (let ([]))
     (eopl:error 'global-env "apply-global-env should not be called")))
     ;; (cases environment init-env
     ;;        [extended-env-record
