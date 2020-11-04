@@ -60,7 +60,7 @@
           (eopl:error 'global-env "global environment is missing symbol ~s" sym)))))
    
 (define extend-global-env
-  (lambda (syms vals . env)
+  (lambda (syms vals env)
     (letrec ([merge
               (lambda (syms vals o-syms o-vals)
                 (if (null? syms)
@@ -76,15 +76,11 @@
                                  (cdr vals)
                                  (cons (car syms) o-syms)
                                  (cons (cell (car vals)) o-vals))))))])
-      (let ([genv
-             (if (null? env)
-                 global-env
-                 (car env))])
-        (let* ([o-syms (car genv)]
-               [o-vals (cdr genv)]
-               [new (merge syms vals (deref o-syms) (deref o-vals))])
-          (set!-ref o-syms (car new))
-          (set!-ref o-vals (cdr new)))))))
+      (let* ([o-syms (car env)]
+             [o-vals (cdr env)]
+             [new (merge syms vals (deref o-syms) (deref o-vals))])
+        (set!-ref o-syms (car new))
+        (set!-ref o-vals (cdr new))))))
 
 
 (define reset-global-env
