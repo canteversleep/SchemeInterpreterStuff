@@ -40,17 +40,22 @@
             (id)
             (apply-env env `(: free ,id))]
            [lex-lambda-exp
-            (bodies proper improper)
-            (closure bodies env)]
+            (bodies proper)
+            (closure bodies env proper)]
            [app-exp
             (rator rands)
             (let ([proc-value (eval-exp rator env)]
                   [args (eval-rands rands env)])
               (apply-proc proc-value args))]
-           [set!-exp
-            (id exp)
+           [lex-set!-exp
+            (addr exp)
             (set!-ref
-             (apply-env-ref env id)
+             (apply-env-ref env
+                            (cases expression id
+                                   [free-var-exp (id)
+                                                 `(: free ,id)]
+                                   [bound-var-exp (depth index)
+                                                  `(: ,depth ,index)]))
              (eval-exp exp env))]
            [if-exp
             (test consequent alternative)
