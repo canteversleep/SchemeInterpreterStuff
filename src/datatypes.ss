@@ -76,6 +76,8 @@
       (or (null? x) (symbol? x) ((list-of symbol?) x)
           (improper-safety x))))
    (bodies (list-of expression?))]
+  [lex-lambda-exp
+   (bodies (list-of expression?))]
   [app-exp
    (rator expression?)
    (rands (list-of expression?))]
@@ -84,6 +86,9 @@
    (definition expression?)]
   [set!-exp
    (id symbol?)
+   (val-exp expression?)]
+  [lex-set!-exp
+   (addr scheme-value?) ; needs to be an address
    (val-exp expression?)]
   [if-exp
    (test expression?)
