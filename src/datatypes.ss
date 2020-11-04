@@ -63,6 +63,11 @@
 (define-datatype expression expression?
   [var-exp
    (id symbol?)]
+  [free-var-exp
+   (id symbol?)]
+  [bound-var-exp
+   (depth number?)
+   (index number?)]
   [lit-exp
    (val literal?)]
   [lambda-exp

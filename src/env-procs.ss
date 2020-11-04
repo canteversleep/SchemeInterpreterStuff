@@ -95,3 +95,26 @@
       (set!-ref vals (map prim-proc *prim-proc-names*)))))
 
 
+;; lexical addressing also requires the use of static environments for lexing step
+;; we implement those here
+
+
+(define empty-senv
+  (lambda ()
+    '()))
+
+
+(define extend-senv
+  (lambda (vars senv)
+    (cons vars senv)))
+
+(define apply-senv
+  (lambda (senv var)
+    (let recur ([depth 0]
+                [senv senv])
+      (if (null? senv)
+          (free-var-exp var)
+          (let ([index (list-find-position var (car senv))])
+          (if (number? index)
+              (bound-var-exp depth index)
+              (recur (add1 depth) (cdr senv))))))))

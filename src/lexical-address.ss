@@ -3,6 +3,6 @@
 
 
 (define lexical-address
-  (lambda (exp)
+  (lambda (exp senv)
     (cases expression exp
            [])))
