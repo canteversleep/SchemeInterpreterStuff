@@ -14,7 +14,7 @@
    - list of lists representation that focuses particularly on stack efficiency
 2. continuation style passing
 3. fun stuff:
-   - a universal call by value mechanism
+   - a universal call by reference mechanism
    - **maybe** a dynamic scoping switch *lets go retro*
 
 ## Future Stuff for Passive Work:
