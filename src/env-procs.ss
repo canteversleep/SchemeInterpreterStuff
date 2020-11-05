@@ -39,7 +39,7 @@
           [index (3rd lxadr)])
       (if (eq? 'free depth)
           (apply-global-env index)
-          (list-ref index (list-ref depth env))))))
+          (list-ref (list-ref env depth) index)))))
 
 (define apply-env
   (lambda (env lxadr)
@@ -52,8 +52,8 @@
 
 (define apply-global-env
   (lambda (sym)
-    (let* ([syms (car global-env)]
-           [vals (cdr global-env)]
+    (let* ([syms (deref (car global-env))]
+           [vals (deref (cdr global-env))]
            [pos (list-find-position sym syms)])
       (if (number? pos)
           (list-ref vals pos)
@@ -88,7 +88,7 @@
     (let ([syms (car global-env)]
           [vals (cdr global-env)])
       (set!-ref syms *prim-proc-names*)
-      (set!-ref vals (map prim-proc *prim-proc-names*)))))
+      (set!-ref vals (map cell (map prim-proc *prim-proc-names*))))))
 
 
 ;; lexical addressing also requires the use of static environments for lexing step

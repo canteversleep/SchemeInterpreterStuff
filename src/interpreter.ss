@@ -20,7 +20,7 @@
 
 (define top-level-eval
   (lambda (form)
-    (eval-exp form global-env)))
+    (eval-exp form (empty-env))))
 
 ; eval-exp is the main component of the interpreter
 ;; TODO: Add all grammar forms for initial implementation of eval-exp
@@ -35,7 +35,7 @@
                 (cadr datum))]
            [bound-var-exp
             (depth index)
-            (apply-env env `(: ,depth index))]
+            (apply-env env `(: ,depth ,index))]
            [free-var-exp
             (id)
             (apply-env env `(: free ,id))]
@@ -51,11 +51,12 @@
             (addr exp)
             (set!-ref
              (apply-env-ref env
-                            (cases expression id
+                            (cases expression addr
                                    [free-var-exp (id)
                                                  `(: free ,id)]
                                    [bound-var-exp (depth index)
-                                                  `(: ,depth ,index)]))
+                                                  `(: ,depth ,index)]
+                                   [else (eopl:error 'apply-env "bad input: ~s" addr)]))
              (eval-exp exp env))]
            [if-exp
             (test consequent alternative)
@@ -210,4 +211,4 @@
       (rep))))  ; tail-recursive, so stack doesn't grow.
 
 (define eval-one-exp
-  (lambda (x) (top-level-eval (syntax-expand (parse-exp x)))))
+  (lambda (x) (top-level-eval (lexical-address (syntax-expand (parse-exp x))))))

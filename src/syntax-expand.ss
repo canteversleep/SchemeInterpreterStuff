@@ -96,7 +96,8 @@
              (def-exp
                id
                (syntax-expand definition))]
-           [unspecified-exp () (unspecified-exp)])))
+           [unspecified-exp () (unspecified-exp)]
+           [else (eopl:error 'expand "invalid input: ~s" expr)])))
 
 ;; ;; A bunch of helpers for the expander
 

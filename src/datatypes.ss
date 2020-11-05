@@ -135,7 +135,7 @@
    (name symbol?)]
   [closure
    (bodies (list-of expression?))
-   (current-env list?)
+   (current-env scheme-value?)
    (nproper number?)])
 
 ; cell ADT
