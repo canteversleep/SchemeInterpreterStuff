@@ -6,6 +6,7 @@
 - currently includes a parser and an evaluator of some Scheme core forms and extended forms as well as primitive procedures
 - environments are represented using an `eopl:datatype`
 - syntax expansion procedure that expands a variety of non-core forms into core forms to increase the scope of the target language
+- a universal call by reference mechanism in procedure creation
 
 ## Work in Progress:
 
@@ -14,7 +15,6 @@
    - list of lists representation that focuses particularly on stack efficiency
 2. continuation style passing
 3. fun stuff:
-   - a universal call by reference mechanism
    - **maybe** a dynamic scoping switch *lets go retro*
 
 ## Future Stuff for Passive Work:
