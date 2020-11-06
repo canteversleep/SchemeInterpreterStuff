@@ -146,6 +146,7 @@
      [(symbol? ids) (extend-env (list ids) (list args) env)]
      [(null? ids) env]
      [((list-of symbol?) ids) (extend-env ids args env)]
+     [(ref-safety ids) (extend-env ids args env)]
      [(improper-safety ids)
       (let ([when-improper (proper-counter ids)])
         (extend-env

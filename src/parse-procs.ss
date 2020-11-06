@@ -50,13 +50,7 @@
                            [((list-of symbol?) fs) fs]
                            [(list? fs)
                             (cond
-                             [(andmap
-                               (lambda (x)
-                                 (or
-                                  (symbol? x)
-                                  (and (list? x)
-                                       (= 2 (length x))
-                                       (eq? 'ref (car x))))) fs) fs]
+                             [(ref-safety fs) fs]
                              [else (error-reporter 'lambda-formals-symbol fs)])]
                            [(improper-safety fs) fs]
                            [else (error-reporter 'lambda-formals-symbol fs)])]

@@ -3,6 +3,20 @@
 
 ; some helpers
 
+; reference safety
+; when declaring a procedure with explicit references, this
+; simply checks to see that the formals are valid
+; i.e. (lambda (x (ref y) ....))
+
+(define ref-safety
+  (lambda (x)
+    (andmap
+           (lambda (id)
+             (or (symbol? id)
+                 (and (list? id)
+                      (= 2 (length id))
+                      (eq? 'ref (car id))))) x)))
+
 ; conses a list up until the nth reference
 
 (define list-up-until
@@ -68,7 +82,9 @@
   [lambda-exp
    (formals
     (lambda (x)
-      (or (null? x) (symbol? x) ((list-of symbol?) x)
+      (or (null? x) (symbol? x)
+          ((list-of symbol?) x)
+          (ref-safety x)
           (improper-safety x))))
    (bodies (list-of expression?))]
   [app-exp
