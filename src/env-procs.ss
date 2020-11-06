@@ -13,20 +13,30 @@
     (extended-env-record syms (map cell (map cdr vals)) env))) ; map cell vals simply gives us cells instead of values
 
 (define extend-env-w-ref
-  (lambda (syms vals env newnev)
+  (lambda (syms vals env newenv)
     (let* ([sym-group?
             (lambda (group)
               (let ([id (car group)])
                 (if (symbol? id) #t #f)))]
+           [fref-group?
+            (lambda (group)
+              (let ([val (car (cdr group))])
+                (and (list? val) (= 2 (length val)) (eq? 'var-exp (car val)))))]
            [group (map cons syms vals)]
            [sym-group (filter sym-group? group)]
            [ref-group (remp sym-group? group)]
-           [sym-vals (if (null? sym-group) '() (map cell (map cdr (cdr sym-group))))]
-           [ref-vals-for-lookup (map cadr (map car (map cdr ref-group)))]
-           [ref-vals (map (lambda (x) (apply-env-ref newnev x)) ref-vals-for-lookup)])
+           [fref-group (filter fref-group? ref-group)]
+           [asym-group (remp fref-group? ref-group)]
+           [sym-vals (if (null? sym-group) '() (map cell (map cdr (map cdr sym-group))))]
+           [asym-vals (if (null? asym-group) '() (map cell (map cdr (map cdr asym-group))))]
+           [ref-vals-for-lookup (map cadr (map car (map cdr fref-group)))]
+           [ref-vals (map (lambda (x) (apply-env-ref newenv x)) ref-vals-for-lookup)])
       (extended-env-record
-       (append (car sym-group) (car ref-group))
-       (append sym-vals ref-vals)
+       (append
+        (if (null? asym-vals) '() (map cadr (map car asym-group)))
+        (if (null? sym-group) '() (map car sym-group))
+        (map cadr (map car fref-group)))
+       (append asym-vals sym-vals ref-vals)
        env))))
 
 
