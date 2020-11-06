@@ -43,7 +43,7 @@
             (rator rands)
             (let ([proc-value (eval-exp rator env)]
                   [args (map cons rands (eval-rands rands env))])
-              (apply-proc proc-value args))]
+              (apply-proc proc-value args env))]
            [set!-exp
             (id exp)
             (set!-ref
@@ -91,19 +91,24 @@
 
 
 ;  Apply a procedure to its arguments.
-;; TODO: implement user-defined procedures evaluation
+;; DONE: implement user-defined procedures evaluation
 ;; no need to pass in the environment here since only values are ever passed in
+;; actually, for the pass by reference branch, we do need to pass in the environment
+;; as we need to potentially look up references that were not there at the creation of
+;; our closures
+
 (define apply-proc
-  (lambda (proc-value args)
+  (lambda (proc-value args env)
     (cases proc-val proc-value
            [prim-proc
-            (op) (apply-prim-proc op args)]
+            (op) (apply-prim-proc op (map cdr args))]
            [closure
-            (ids bodies env)
+            (ids bodies c-env) ; env at the time of the closures conception
             (eval-bodies
              bodies
              (closure-extend ids
                              args ;note that we do not evaluate the args as that was already done
+                             c-env
                              env))]
            [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s"
@@ -112,12 +117,12 @@
 ; Closure helper for variables ids
 
 (define closure-extend
-  (lambda (ids args env)
+  (lambda (ids args env newenv)
     (cond
      [(symbol? ids) (extend-env (list ids) (list args) env)]
      [(null? ids) env]
      [((list-of symbol?) ids) (extend-env ids args env)]
-     [(ref-safety ids) (extend-env-w-ref ids args env)]
+     [(ref-safety ids) (extend-env-w-ref ids args env newenv)]
      [(improper-safety ids)
       (let ([when-improper (proper-counter ids)])
         (extend-env
@@ -178,8 +183,8 @@
       [(procedure?) (apply proc-val? args)]
       [(set-car!) (set-car! (1st args) (2nd args))]
       [(set-cdr!) (set-cdr! (1st args) (2nd args))]
-      [(apply) (apply (lambda x (apply-proc (1st args) x)) (append (2nd args) (cddr args)))]
-      [(map) (apply map (lambda x (apply-proc (1st args) x)) (cdr args))]
+      [(apply) (apply (lambda x (apply-proc (1st args) (map cons x x) (empty-env))) (append (2nd args) (cddr args)))]
+      [(map) (apply map (lambda x (apply-proc (1st args) (map cons x x) (empty-env))) (cdr args))]
       [(vector) (apply vector args)]
       [(vector-ref) (vector-ref (1st args) (2nd args))]
       [(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
