@@ -7,7 +7,24 @@
 
 (define extend-env
   (lambda (syms vals env)
-    (extended-env-record syms (map cell vals) env))) ; map cell vals simply gives us cells instead of values
+    (extended-env-record syms (map cell (map cdr vals)) env))) ; map cell vals simply gives us cells instead of values
+
+(define extend-env-w-ref
+  (lambda (syms vals env)
+    (let* ([sym-group?
+            (lambda (group)
+              (let ([id (car group)])
+                (if (symbol? id) #t #f)))]
+           [group (cons syms vals)]
+           [sym-group (filter sym-group? group)]
+           [ref-group (remp sym-group? group)]
+           [sym-vals (map cell (map cdr (cdr sym-group)))]
+           [ref-vals-for-lookup (map car (cdr ref-group))]
+           [ref-vals (map (lambda (x) (apply-env-ref env x)) ref-vals-for-lookup)])
+      (extended-env-record
+       (append (car sym-group) (car ref-group))
+       (append sym-vals ref-vals)))))
+
 
 (define list-find-position
   (lambda (sym los)

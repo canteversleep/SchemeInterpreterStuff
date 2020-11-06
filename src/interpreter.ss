@@ -42,7 +42,7 @@
            [app-exp
             (rator rands)
             (let ([proc-value (eval-exp rator env)]
-                  [args (eval-rands rands env)])
+                  [args (map cons rands (eval-rands rands env))])
               (apply-proc proc-value args))]
            [set!-exp
             (id exp)
@@ -117,7 +117,7 @@
      [(symbol? ids) (extend-env (list ids) (list args) env)]
      [(null? ids) env]
      [((list-of symbol?) ids) (extend-env ids args env)]
-     [(ref-safety ids) (extend-env ids args env)]
+     [(ref-safety ids) (extend-env-w-ref ids args env)]
      [(improper-safety ids)
       (let ([when-improper (proper-counter ids)])
         (extend-env
