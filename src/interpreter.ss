@@ -75,23 +75,6 @@
                 (begin
                   (for-each (lambda (x) (eval-exp x env)) bodies)
                   (eval-exp (while-exp test bodies) env)))]
-           [for-exp
-            (var beginning end doing upordown)
-            (let ([nb (eval-exp beginning env)]
-                  [ne (eval-exp end env)]
-                  [isup (eq? 'to upordown)])
-              (if (if isup (>= nb (add1 ne)) (<= (add1 nb) ne))
-                  (void)
-                  (begin
-                    (eval-exp doing (extend-env (list var) (list (if isup nb ne)) env))
-                    (eval-exp
-                     (for-exp
-                      var
-                      (if isup (lit-exp (add1 nb)) (lit-exp nb))
-                      (if isup (lit-exp ne) (lit-exp (add1 ne)))
-                      doing
-                      upordown)
-                     env))))]
            [def-exp
              (id definition)
              (extend-global-env (list id) (list (eval-exp definition env)) global-env)]
@@ -157,13 +140,13 @@
 
 ; helpers for closure-extend
 
-
-(define init-env         ; for now, our initial global environment only contains 
-  (extend-env            ; procedure names.  Recall that an environment associates
-     *prim-proc-names*   ;  a value (not an expression) with an identifier.
-     (map prim-proc      
-          *prim-proc-names*)
-     (empty-env)))
+; not used
+;; (define init-env         ; for now, our initial global environment only contains
+;;   (extend-env            ; procedure names.  Recall that an environment associates
+;;      *prim-proc-names*   ;  a value (not an expression) with an identifier.
+;;      (map prim-proc
+;;           *prim-proc-names*)
+;;      (empty-env)))
 
 ; Usually an interpreter must define each 
 ; built-in procedure individually.  We are "cheating" a little bit.
