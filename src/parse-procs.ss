@@ -48,7 +48,16 @@
                          [(pair? fs)
                           (cond
                            [((list-of symbol?) fs) fs]
-                           [(list? fs) (error-reporter 'lambda-formals-symbol fs)]
+                           [(list? fs)
+                            (cond
+                             [(andmap
+                               (lambda (x)
+                                 (or
+                                  (symbol? x)
+                                  (and (list? x)
+                                       (= 2 (length x))
+                                       (eq? 'ref (car x))))) fs) fs]
+                             [else (error-reporter 'lambda-formals-symbol fs)])]
                            [(improper-safety fs) fs]
                            [else (error-reporter 'lambda-formals-symbol fs)])]
                          [else (error-reporter 'lambda-formals-symbol fs)]))])
@@ -169,7 +178,7 @@
 (define (error-reporter id expr)
   (case id
     [(lambda-formals-symbol)
-     (eopl:error 'parse-exp "lambda-expression: formal arguments ~s must all be symbols" expr)]
+     (eopl:error 'parse-exp "lambda-expression: formal arguments ~s must all be symbols or references" expr)]
     [(lambda-length)
      (eopl:error 'parse-exp "lambda-expression: incorrect length ~s" expr)]
     [(set!-var-format)
