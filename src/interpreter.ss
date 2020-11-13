@@ -30,9 +30,7 @@
     (cases expression exp
            [lit-exp
             (datum)
-            (if (nqatom? datum)
-                datum
-                (cadr datum))]
+            datum]
            [var-exp
             (id)
             (apply-env env id)]

@@ -33,7 +33,9 @@
       (if (eqv? 'else datum)
           'else
           (var-exp datum))]
-     [(literal? datum) (lit-exp datum)]
+     [(literal? datum) (lit-exp (if (nqatom? datum)
+                                    datum
+                                    (cadr datum)))]
      [(pair? datum)
       (if (list? datum)
           (cond

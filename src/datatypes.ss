@@ -64,7 +64,7 @@
   [var-exp
    (id symbol?)]
   [lit-exp
-   (val literal?)]
+   (val scheme-value?)]
   [lambda-exp
    (formals
     (lambda (x)
