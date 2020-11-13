@@ -20,23 +20,23 @@
 
 (define top-level-eval
   (lambda (form)
-    (eval-exp form global-env)))
+    (eval-exp form global-env init-k)))
 
 ; eval-exp is the main component of the interpreter
 ;; TODO: Add all grammar forms for initial implementation of eval-exp
 ;; NOTE: overridden later with syntax expander. Currently we evaluate everything as part of original grammar. Later, all exps will be converted to core form
 (define eval-exp
-  (lambda (exp env)
+  (lambda (exp env k)
     (cases expression exp
            [lit-exp
-            (datum)
+            (apply-k k datum)
             datum]
            [var-exp
             (id)
-            (apply-env env id)]
+            (apply-k k (apply-env env id))]
            [lambda-exp
             (ids bodies)
-            (closure ids bodies env)]
+            (apply-k k (closure ids bodies env))]
            [app-exp
             (rator rands)
             (let ([proc-value (eval-exp rator env)]
@@ -55,18 +55,6 @@
                     (eval-exp alternative env))
                 (if (eval-exp test env)
                     (eval-exp consequent env)))]
-           [let-exp
-            (name vars exps bodies variant)
-            (case variant
-              [(let)
-               (if name
-                   (eopl:error 'eval-exp "Yet to be implemented")
-                   (eval-bodies
-                    bodies
-                    (extend-env vars
-                                (eval-rands exps env)
-                                env)))]
-              [else (eopl:error 'eval-exp "Yet to be implemented")])]
            [while-exp
             (test bodies)
             (if (eval-exp test env)
