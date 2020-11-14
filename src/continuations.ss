@@ -29,7 +29,10 @@
    (k continuation?)]
   [rands-k
    (proc-value proc-val?)
-   (k continuation?)])
+   (k continuation?)]
+  [set!-k
+   (id symbol?)
+   (env environment?)])
 
 
 (define apply-k
@@ -52,7 +55,11 @@
                                 env
                                 (rands-k v k))]
            [rands-k (proc-value k)
-                    (apply-proc proc-value v k)])))
+                    (apply-proc proc-value v k)]
+           [set!-k (id env)
+                   (set!-ref
+                    (apply-env-ref env id)
+                    v)])))
 
 (define map/k
   (lambda (proc/k ls k)

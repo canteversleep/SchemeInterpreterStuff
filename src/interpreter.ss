@@ -20,7 +20,7 @@
 
 (define top-level-eval
   (lambda (form)
-    (eval-exp form global-env init-k)))
+    (eval-exp form global-env (init-k))))
 
 ; eval-exp is the main component of the interpreter
 ;; TODO: Add all grammar forms for initial implementation of eval-exp
@@ -29,8 +29,8 @@
   (lambda (exp env k)
     (cases expression exp
            [lit-exp
-            (apply-k k datum)
-            datum]
+            (datum)
+            (apply-k k datum)]
            [var-exp
             (id)
             (apply-k k (apply-env env id))]
@@ -39,16 +39,13 @@
             (apply-k k (closure ids bodies env))]
            [app-exp
             (rator rands)
-            (eval-exp rator env (rator-k rands env k))
-            ;; (let ([proc-value (eval-exp rator env)]
-            ;;       [args (eval-rands rands env)])
-            ;;   (apply-proc proc-value args))
-            ]
+            (eval-exp rator env (rator-k rands env k))]
            [set!-exp
             (id exp)
-            (set!-ref
-             (apply-env-ref env id)
-             (eval-exp exp env))]
+            (eval-exp exp env (set!-k id env))]
+            ;; (set!-ref
+            ;;  (apply-env-ref env id)
+            ;;  (eval-exp exp env))]
            [if-exp
             (test consequent alternative)
             (eval-exp test env
@@ -175,8 +172,6 @@
       [(procedure?) (apply proc-val? args)]
       [(set-car!) (set-car! (1st args) (2nd args))]
       [(set-cdr!) (set-cdr! (1st args) (2nd args))]
-      [(apply) (apply (lambda x (apply-proc (1st args) x)) (append (2nd args) (cddr args)))]
-      [(map) (apply map (lambda x (apply-proc (1st args) x)) (cdr args))]
       [(vector) (apply vector args)]
       [(vector-ref) (vector-ref (1st args) (2nd args))]
       [(vector-set!) (vector-set! (1st args) (2nd args) (3rd args))]
@@ -184,6 +179,8 @@
       [(append) (apply append args)]
       [(list-tail) (apply list-tail args)]
       [(assq) (apply assq args)]
+      [(apply) (apply (lambda x (apply-proc (1st args) x)) (append (2nd args) (cddr args)))]
+      [(map) (apply map (lambda x (apply-proc (1st args) x)) (cdr args))]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))
