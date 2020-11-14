@@ -46,7 +46,7 @@
                                 env
                                 (rands-k v k))]
            [rands-k (proc-value k)
-                    (apply-proc proc-value val k)])))
+                    (apply-proc proc-value v k)])))
 
 (define map/k
   (lambda (proc/k ls k)

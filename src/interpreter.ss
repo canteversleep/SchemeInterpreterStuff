@@ -69,10 +69,10 @@
 ;; DONE: Add env field
 (define eval-rands
   (lambda (rands env k)
-    (map
-     (lambda (exp)
-       (eval-exp exp env))
-     rands)))
+    (map/k
+     (lambda (exp k)
+       (eval-exp exp env k))
+     rands k)))
 
 
 ; evaluate the bodies in an environment expanding expression such as a lambda or a begin,
@@ -93,7 +93,7 @@
   (lambda (proc-value args k)
     (cases proc-val proc-value
            [prim-proc
-            (op) (apply-prim-proc op args)]
+            (op) (apply-prim-proc op args k)]
            [closure
             (ids bodies env)
             (eval-bodies
@@ -136,7 +136,7 @@
 ; built-in procedure individually.  We are "cheating" a little bit.
 
 (define apply-prim-proc
-  (lambda (prim-proc args)
+  (lambda (prim-proc args k)
     (case prim-proc
       [(+) (apply + args)]
       [(-) (apply - args)]
