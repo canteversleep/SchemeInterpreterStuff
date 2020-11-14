@@ -39,9 +39,11 @@
             (apply-k k (closure ids bodies env))]
            [app-exp
             (rator rands)
-            (let ([proc-value (eval-exp rator env)]
-                  [args (eval-rands rands env)])
-              (apply-proc proc-value args))]
+            (eval-exp rator env (rator-k rands env k))
+            ;; (let ([proc-value (eval-exp rator env)]
+            ;;       [args (eval-rands rands env)])
+            ;;   (apply-proc proc-value args))
+            ]
            [set!-exp
             (id exp)
             (set!-ref
@@ -49,12 +51,8 @@
              (eval-exp exp env))]
            [if-exp
             (test consequent alternative)
-            (if alternative
-                (if (eval-exp test env)
-                    (eval-exp consequent env)
-                    (eval-exp alternative env))
-                (if (eval-exp test env)
-                    (eval-exp consequent env)))]
+            (eval-exp test env
+                      (if-k consequent alternative env k))]
            [while-exp
             (test bodies)
             (if (eval-exp test env)
@@ -70,7 +68,7 @@
 ; evaluate the list of operands, putting results into a list
 ;; DONE: Add env field
 (define eval-rands
-  (lambda (rands env)
+  (lambda (rands env k)
     (map
      (lambda (exp)
        (eval-exp exp env))
@@ -92,7 +90,7 @@
 ;; TODO: implement user-defined procedures evaluation
 ;; no need to pass in the environment here since only values are ever passed in
 (define apply-proc
-  (lambda (proc-value args)
+  (lambda (proc-value args k)
     (cases proc-val proc-value
            [prim-proc
             (op) (apply-prim-proc op args)]
