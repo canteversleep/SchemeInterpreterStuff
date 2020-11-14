@@ -79,11 +79,12 @@
 ; returning the last
 
 (define eval-bodies
-  (lambda (bodies env)
+  (lambda (bodies env k)
     (if (null? (cdr bodies))
-        (eval-exp (car bodies) env)
-        (begin (eval-exp (car bodies) env)
-               (eval-bodies (cdr bodies) env)))))
+        (eval-exp (car bodies) env k)
+        (eval-exp (car bodies) env (bodies-k (cdr bodies) env k)))))
+        ;; (begin (eval-exp (car bodies) env)
+        ;;        (eval-bodies (cdr bodies) env)))))
 
 
 ;  Apply a procedure to its arguments.
@@ -100,7 +101,8 @@
              bodies
              (closure-extend ids
                              args ;note that we do not evaluate the args as that was already done
-                             env))]
+                             env)
+             k)]
            [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s"
                    proc-value)])))

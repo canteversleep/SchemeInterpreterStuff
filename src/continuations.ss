@@ -11,6 +11,10 @@
    (ls list?)
    (proc/k procedure?)
    (k continuation?)]
+  [bodies-k
+   (bodies (list-of expression?))
+   (env environment?)
+   (k continuation?)]
   [map-cons-k
    (item scheme-value?)
    (k continuation?)]
@@ -34,6 +38,8 @@
            [init-k () v]
            [map-k (ls proc/k k)
                   (map/k proc/k ls (map-cons-k v k))]
+           [bodies-k (bodies env k)
+                     (eval-bodies bodies env k)]
            [map-cons-k (item k)
                        (apply-k k (cons item v))]
            [if-k (consequent alternative env k)
