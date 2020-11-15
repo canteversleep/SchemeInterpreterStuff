@@ -20,7 +20,7 @@
    (k continuation?)]
   [if-k
    (consequent expression?)
-   (alternative optional?)
+   (alternative (lambda (x) (or (expression? x) (eq? #f x))))
    (env environment?)
    (k continuation?)]
   [rator-k
@@ -67,6 +67,9 @@
         (apply-k k '())
         (proc/k (car ls)
                 (map-k (cdr ls) proc/k k)))))
+
+;; (define apply/k
+;;   (lambda (proc/k . args)))
 
 ;; ;
 ;; (define map-cps

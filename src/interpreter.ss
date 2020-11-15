@@ -43,9 +43,6 @@
            [set!-exp
             (id exp)
             (eval-exp exp env (set!-k id env))]
-            ;; (set!-ref
-            ;;  (apply-env-ref env id)
-            ;;  (eval-exp exp env))]
            [if-exp
             (test consequent alternative)
             (eval-exp test env
@@ -54,11 +51,11 @@
             (test bodies)
             (if (eval-exp test env)
                 (begin
-                  (for-each (lambda (x) (eval-exp x env)) bodies)
-                  (eval-exp (while-exp test bodies) env)))]
+                  (for-each (lambda (x) (eval-exp x env k)) bodies)
+                  (eval-exp (while-exp test bodies) env k)))]
            [def-exp
              (id definition)
-             (extend-global-env (list id) (list (eval-exp definition env)) global-env)]
+             (extend-global-env (list id) (list (eval-exp definition env k)) global-env)]
            [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
