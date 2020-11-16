@@ -141,7 +141,9 @@
   [closure
    (ids scheme-value?)
    (bodies (list-of expression?))
-   (current-env environment?)])
+   (current-env environment?)]
+  [cont-proc
+   (k continuation?)])
 
 ; cell ADT
 ; DONE: fix

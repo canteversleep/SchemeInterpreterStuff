@@ -4,7 +4,7 @@
                               equal? length list->vector list? pair? vector->list vector?
                               number? symbol? caar cadr cadar procedure? set-car! set-cdr!
                               apply map vector vector-ref > < <= vector-set! eqv? quotient
-                              append list-tail assq))
+                              append list-tail assq call/cc exit-list))
 
 
 ;; our global environment starts out as the empty environment but can be expanded
@@ -95,6 +95,9 @@
                              args ;note that we do not evaluate the args as that was already done
                              env)
              k)]
+           [cont-proc
+            (k)
+            (apply-k k (car args))]
            [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s"
                    proc-value)])))
@@ -176,7 +179,9 @@
       [(assq) (apply/k assq args k)]
       [(apply) (apply (lambda (k . x) (apply-proc (1st args) x k)) k (append (2nd args) (cddr args)))]
       [(map) (map/k (lambda (x k) (apply-proc (1st args) (list x) k)) (cadr args) k)]
-      [else (error 'apply-prim-proc 
+      [(exit-list) (apply-k (init-k) args)]
+      [(call/cc) (apply-proc (car args) (list (cont-proc k)) k)]
+      [else (error 'apply-prim-proc
             "Bad primitive procedure name: ~s" 
             prim-op)])))
 
