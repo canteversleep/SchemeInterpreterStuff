@@ -49,10 +49,12 @@
                       (if-k consequent alternative env k))]
            [while-exp
             (test bodies)
-            (if (eval-exp test env)
-                (begin
-                  (for-each (lambda (x) (eval-exp x env k)) bodies)
-                  (eval-exp (while-exp test bodies) env k)))]
+            (eval-exp test env (while-k test bodies env k))
+            ;; (if (eval-exp test env)
+            ;;     (begin
+            ;;       (for-each (lambda (x) (eval-exp x env k)) bodies)
+                  ;; (eval-exp (while-exp test bodies) env k)))
+            ]
            [def-exp
              (id definition)
              (extend-global-env (list id) (list (eval-exp definition env k)) global-env)]

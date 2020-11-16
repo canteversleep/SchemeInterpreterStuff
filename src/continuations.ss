@@ -32,7 +32,21 @@
    (k continuation?)]
   [set!-k
    (id symbol?)
-   (env environment?)])
+   (env environment?)]
+  [while-k
+   (test expression?)
+   (bodies (list-of expression?))
+   (env environment?)
+   (k continuation?)]
+  [while-test-k
+   (test expression?)
+   (bodies (list-of expression?))
+   (env environment?)
+   (k continuation?)]
+  [for-each-k
+   (ls list?)
+   (proc/k procedure?)
+   (k continuation?)])
 
 
 (define apply-k
@@ -49,7 +63,8 @@
                  (if v
                      (eval-exp consequent env k)
                      (if alternative
-                         (eval-exp alternative env k)))]
+                         (eval-exp alternative env k)
+                         (apply-k k '())))]
            [rator-k (rands env k)
                     (eval-rands rands
                                 env
@@ -59,7 +74,18 @@
            [set!-k (id env)
                    (set!-ref
                     (apply-env-ref env id)
-                    v)])))
+                    v)]
+           [while-k (test bodies env k)
+                    (if v
+                        (for-each/k
+                         (lambda (x k) (eval-exp x env k))
+                         bodies
+                         (while-test-k test bodies env k))
+                        (apply-k k '()))]
+           [while-test-k (test bodies env k)
+                         (eval-exp test env (while-k test bodies env k))]
+           [for-each-k (ls proc/k k)
+                       (for-each/k proc/k ls k)])))
 
 (define map/k
   (lambda (proc/k ls k)
@@ -67,6 +93,13 @@
         (apply-k k '())
         (proc/k (car ls)
                 (map-k (cdr ls) proc/k k)))))
+
+(define for-each/k
+  (lambda (proc/k ls k)
+    (if (null? ls)
+        (apply-k k 1)
+        (proc/k (car ls)
+                (for-each-k (cdr ls) proc/k k)))))
 
 
 (define make-cps
