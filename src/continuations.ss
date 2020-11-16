@@ -68,6 +68,17 @@
         (proc/k (car ls)
                 (map-k (cdr ls) proc/k k)))))
 
+
+(define make-cps
+  (lambda (proc)
+    (lambda (v k)
+      (apply-k k (proc v)))))
+
+
+(define apply/k
+  (lambda (proc args k)
+    (apply-k k (apply proc args))))
+
 ;; (define apply/k
 ;;   (lambda (proc/k . args)))
 
