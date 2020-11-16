@@ -32,7 +32,8 @@
    (k continuation?)]
   [set!-k
    (id symbol?)
-   (env environment?)]
+   (env environment?)
+   (k continuation?)]
   [while-k
    (test expression?)
    (bodies (list-of expression?))
@@ -46,7 +47,10 @@
   [for-each-k
    (ls list?)
    (proc/k procedure?)
-   (k continuation?)])
+   (k continuation?)]
+  [define-k
+    (id symbol?)
+    (k continuation?)])
 
 
 (define apply-k
@@ -71,10 +75,10 @@
                                 (rands-k v k))]
            [rands-k (proc-value k)
                     (apply-proc proc-value v k)]
-           [set!-k (id env)
-                   (set!-ref
+           [set!-k (id env k)
+                   (apply-k k (set!-ref
                     (apply-env-ref env id)
-                    v)]
+                    v))]
            [while-k (test bodies env k)
                     (if v
                         (for-each/k
@@ -85,7 +89,9 @@
            [while-test-k (test bodies env k)
                          (eval-exp test env (while-k test bodies env k))]
            [for-each-k (ls proc/k k)
-                       (for-each/k proc/k ls k)])))
+                       (for-each/k proc/k ls k)]
+           [define-k (id k)
+             (apply-k k (extend-global-env (list id) (list v) global-env))])))
 
 (define map/k
   (lambda (proc/k ls k)

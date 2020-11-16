@@ -42,22 +42,18 @@
             (eval-exp rator env (rator-k rands env k))]
            [set!-exp
             (id exp)
-            (eval-exp exp env (set!-k id env))]
+            (eval-exp exp env (set!-k id env k))]
            [if-exp
             (test consequent alternative)
             (eval-exp test env
                       (if-k consequent alternative env k))]
            [while-exp
             (test bodies)
-            (eval-exp test env (while-k test bodies env k))
-            ;; (if (eval-exp test env)
-            ;;     (begin
-            ;;       (for-each (lambda (x) (eval-exp x env k)) bodies)
-                  ;; (eval-exp (while-exp test bodies) env k)))
-            ]
+            (eval-exp test env (while-k test bodies env k))]
            [def-exp
              (id definition)
-             (extend-global-env (list id) (list (eval-exp definition env k)) global-env)]
+             (eval-exp definition env (define-k id k))]
+             ;; (extend-global-env (list id) (list (eval-exp definition env k)) global-env)]
            [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
