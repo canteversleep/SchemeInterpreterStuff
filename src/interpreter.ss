@@ -166,7 +166,7 @@
       [(caar) (apply-k k (caar (car args)))]
       [(cadr) (apply-k k (cadr (car args)))]
       [(cadar) (apply-k k (cadar (car args)))]
-      [(procedure?) (apply-k k (proc-val? (car args)))]
+      [(procedure?) (apply/k proc-val? args k)]
       [(set-car!) (apply-k k (set-car! (1st args) (2nd args)))]
       [(set-cdr!) (apply-k k (set-cdr! (1st args) (2nd args)))]
       [(vector) (apply/k vector args k)]
@@ -177,7 +177,7 @@
       [(list-tail) (apply/k list-tail args k)]
       [(assq) (apply/k assq args k)]
       [(apply) (apply (lambda (k . x) (apply-proc (1st args) x k)) k (append (2nd args) (cddr args)))]
-      [(map) (map/k (lambda (x k) (apply-proc (1st args) x k)) (cdr args) k)]
+      [(map) (map/k (lambda (x k) (apply-proc (1st args) (list x) k)) (cadr args) k)]
       [else (error 'apply-prim-proc 
             "Bad primitive procedure name: ~s" 
             prim-op)])))
