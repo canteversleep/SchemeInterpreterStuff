@@ -1,4 +1,3 @@
-; top-level-eval evaluates a form in the global environment
 
 (define *prim-proc-names* '(+ - * add1 sub1 cons = / zero? not >= car cdr list null? eq?
                               equal? length list->vector list? pair? vector->list vector?
@@ -18,13 +17,16 @@
        nenv)
       nenv))))
 
+; top-level-eval evaluates a form in the global environment with an initial continuation
+
 (define top-level-eval
   (lambda (form)
     (eval-exp form global-env (init-k))))
 
 ; eval-exp is the main component of the interpreter
-;; TODO: Add all grammar forms for initial implementation of eval-exp
-;; NOTE: overridden later with syntax expander. Currently we evaluate everything as part of original grammar. Later, all exps will be converted to core form
+;; DONE: Add all grammar forms for initial implementation of eval-exp
+
+
 (define eval-exp
   (lambda (exp env k)
     (cases expression exp
@@ -57,8 +59,8 @@
            [unspecified-exp () (void)]
            [else (eopl:error 'eval-exp "Bad abstract syntax: ~a" exp)])))
 
-; evaluate the list of operands, putting results into a list
-;; DONE: Add env field
+; evaluate the list of operands for proc calls, putting results into a list
+
 (define eval-rands
   (lambda (rands env k)
     (map/k
@@ -75,13 +77,12 @@
     (if (null? (cdr bodies))
         (eval-exp (car bodies) env k)
         (eval-exp (car bodies) env (bodies-k (cdr bodies) env k)))))
-        ;; (begin (eval-exp (car bodies) env)
-        ;;        (eval-bodies (cdr bodies) env)))))
 
 
 ;  Apply a procedure to its arguments.
-;; TODO: implement user-defined procedures evaluation
+;; DONE: implement user-defined procedures evaluation
 ;; no need to pass in the environment here since only values are ever passed in
+
 (define apply-proc
   (lambda (proc-value args k)
     (cases proc-val proc-value
@@ -95,14 +96,14 @@
                              args ;note that we do not evaluate the args as that was already done
                              env)
              k)]
-           [cont-proc
+           [cont-proc ; only possibly invoked after an application of call/cc
             (k)
             (apply-k k (car args))]
            [else (error 'apply-proc
                    "Attempt to apply bad procedure: ~s"
                    proc-value)])))
 
-; Closure helper for variables ids
+; environment extender that takes into account variable arity closures
 
 (define closure-extend
   (lambda (ids args env)
@@ -119,18 +120,15 @@
           (list ((compose cdr when-improper) args)))
          env))])))
 
-; helpers for closure-extend
 
-; not used
-;; (define init-env         ; for now, our initial global environment only contains
-;;   (extend-env            ; procedure names.  Recall that an environment associates
-;;      *prim-proc-names*   ;  a value (not an expression) with an identifier.
-;;      (map prim-proc
-;;           *prim-proc-names*)
-;;      (empty-env)))
 
-; Usually an interpreter must define each 
-; built-in procedure individually.  We are "cheating" a little bit.
+; we define primitive procedures that need not be considered core forms
+; and must already be present in the language for the language to be
+; operational. in most cases, the continuation here is applied since the
+; operands have already been evaluated. the only exception to this rule is
+; map, apply, and call/cc
+; exit-list applies an initial continuation to its args to escape the
+; comupation
 
 (define apply-prim-proc
   (lambda (prim-proc args k)
@@ -185,12 +183,15 @@
             "Bad primitive procedure name: ~s" 
             prim-op)])))
 
+
+; not written in cps. do you know why?
+
 (define rep      ; "read-eval-print" loop.
   (lambda ()
     (display "--> ")
     ;; notice that we don't save changes to the environment...
     (let ([answer (top-level-eval (parse-exp (read)))])
-      ;; TODO: are there answers that should display differently?
+      ;; TODO: implement closure printing pretty later
       (eopl:pretty-print answer) (newline)
       (rep))))  ; tail-recursive, so stack doesn't grow.
 

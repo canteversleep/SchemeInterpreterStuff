@@ -1,5 +1,9 @@
 ; Environment definitions for CSSE 304 Scheme interpreter.  
 ; Based on EoPL sections 2.2 and  2.3
+; environments ins this interpreter are mutable since it binds
+; synmbols to cells. whenever we want to mutate things with set!
+; or define, we can simply change the address to which the box
+; points
 
 (define empty-env
   (lambda ()
@@ -52,22 +56,20 @@
     (deref (apply-env-ref env var))))
 
 
-;;
+;; applying the global environment should never be directly called,
+;; since applications of g-env are only ever done through the
+;; ordinary environemnt application
+;; this is only a design choice and we could seperate global environemnets
+;; from local ones, but i opted for this approach
+
 (define apply-global-env
   (lambda (sym)
     (eopl:error 'global-env "apply-global-env should not be called")))
-    ;; (cases environment init-env
-    ;;        [extended-env-record
-    ;;         (syms vals env)
-    ;;         (let ([pos (list-find-position sym syms)])
-    ;;           (if (number? pos)
-    ;;               (list-ref vals pos)
-    ;;               (eopl:error 'global-env
-    ;;                           "Symbol ~s is not bound in the global environment"
-    ;;                           sym)))]
-    ;;        [empty-env-record
-    ;;         ()
-    ;;         (eopl:error 'global-env "Fatal error: global environment improperly extended")])))
+
+;; observe in interpreter.ss that the, for the gloabl environment
+;; to be dynamic, we make the container housing it's values a cell
+;; this way when we entend, we just do so normally, and mutation is
+;; made easy
 
 (define extend-global-env
   (lambda (syms vals env)
@@ -99,6 +101,7 @@
               ()
               (eopl:error 'global-env "Fatal error: environments improperly extended")]))))
 
+; simple code
 
 (define reset-global-env
   (lambda ()

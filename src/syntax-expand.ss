@@ -1,7 +1,7 @@
 ;; Syntax Expansion:
 ;; takes in parsed expression and converts non-core forms into core forms
 ;; for enhanced evaluation.
-;; currently planned to include: cond case and or let and let*
+;; currently planned to include: cond case and or let and let* and letrec and begin expresssions
 
 
 
@@ -92,13 +92,6 @@
                    (if-exp (syntax-expand test)
                            (syntax-expand consequent)
                            (if alternative (syntax-expand alternative) #f))]
-           [for-exp (var beginning end doing upordown)
-                    (for-exp
-                     var
-                     (syntax-expand beginning)
-                     (syntax-expand end)
-                     (syntax-expand doing)
-                     upordown)]
            [def-exp (id definition)
              (def-exp
                id
@@ -116,10 +109,3 @@
                    (map number->string (iota n)))
               (make-list n "::")))))
 
-
-
-(map car (cddr
- '(case hell
- [(1 2 3 4) 'some]
- [(5 6 7 8) 'other]
- [else #f])))

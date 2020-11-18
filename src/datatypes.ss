@@ -42,6 +42,7 @@
              (improper-safety (cdr ls)))]
      [else #f])))
 
+; asks whether a datum is an atom throught quotes or not
 
 (define (literal? x)
   (or (nqatom? x) (quoted? x)))
@@ -52,13 +53,17 @@
 (define (nqatom? x)
   (and (atom? x) (not (list? x))))
 
+; for internal workings with one armed ifs other syntax with
+; non required fields and keywords
+
 (define (optional? x)
   (or (eq? #f x) (symbol? x)))
 
 (define (lit-pred? x)
   (or (eq? #f x) (eq? #t x)))
 
-; TODO: check case-exp type
+
+;; Expression Datatype
 
 (define-datatype expression expression?
   [var-exp
@@ -132,8 +137,11 @@
    (syms cell?)
    (vals cell?)))
 
-; datatype for procedures.  At first there is only one
-; kind of procedure, but more kinds will be added later.
+; datatype for procedures.
+; three types of proceudures:
+;   1. primitives that we define in the language
+;   2. interpreted user-defined closures
+;   3. continutation-procedures for when call/cc is invoked
 
 (define-datatype proc-val proc-val?
   [prim-proc
@@ -145,8 +153,9 @@
   [cont-proc
    (k continuation?)])
 
-; cell ADT
-; DONE: fix
+;; cell ADT
+;; the commented out code is just how we could define this
+;; but scheme already gives us all of with with box
 
 ;; (define cell
 ;;   (lambda (v)

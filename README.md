@@ -6,16 +6,19 @@
 - currently includes a parser and an evaluator of some Scheme core forms and extended forms as well as primitive procedures
 - environments are represented using an `eopl:datatype`
 - syntax expansion procedure that expands a variety of non-core forms into core forms to increase the scope of the target language
+- written in continuation style passing with call/cc implemented
 
 ## Work in Progress:
 
 1. simpler and more efficient representation of environments. The two main candidates are:
-   - procedural representation, as demonstrated in EOPL-3 Ch. 2.2-2.3
+   - procedural representation, as demonstrated in EOPL-3 Ch. 2.2-2.3 (probably this)
    - list of lists representation that focuses particularly on stack efficiency
-2. continuation style passing
-3. fun stuff:
-   - a universal call by reference mechanism
-   - yeah no: **maybe** a dynamic scoping switch *lets go retro*
+2. fun stuff:
+   - ~~**maybe** a dynamic scoping switch *lets go retro*~~
+3. tower interpretation capability:
+   - the current code uses eopl:type procedures and lacks a few things that would 
+   enable the interpreter to interpret itself. we will incorporate things that enable
+   that.
 
 ## Future Stuff for Passive Work:
 
@@ -23,4 +26,5 @@
 - more readable code for some of the longer procedures, such as the parser
 - better documentation and doc strings
 
-
+## The Different Branches
+add

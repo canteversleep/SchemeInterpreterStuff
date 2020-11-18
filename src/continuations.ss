@@ -107,19 +107,12 @@
         (proc/k (car ls)
                 (for-each-k (cdr ls) proc/k k)))))
 
-
-(define make-cps
-  (lambda (proc)
-    (lambda (v k)
-      (apply-k k (proc v)))))
-
-
 (define apply/k
   (lambda (proc args k)
     (apply-k k (apply proc args))))
 
-;; (define apply/k
-;;   (lambda (proc/k . args)))
+; map works this way in a procedural since.
+; we just transformed it to the datatype approach
 
 ;; ;
 ;; (define map-cps
