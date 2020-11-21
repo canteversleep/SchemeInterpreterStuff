@@ -93,6 +93,21 @@
            [define-k (id k)
              (apply-k k (extend-global-env (list id) (list v) global-env))])))
 
+(define break-k
+  (lambda (k v n)
+    (cases continuation k
+           [while-test-k (test bodies env k)
+                         (if (zero? n)
+                             (apply-k k v)
+                             (break-k k v (sub1 n)))]
+           [while-k (test bodies env k)
+                    (break-k k v n)]
+           [for-each-k (ls proc k)
+                       (break-k k v n)]
+           [bodies-k (bodies env k)
+                     (break-k k v n)]
+           [else (eopl:error 'break-k "problem ~s" k)])))
+
 (define map/k
   (lambda (proc/k ls k)
     (if (null? ls)

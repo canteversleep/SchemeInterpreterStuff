@@ -82,7 +82,7 @@
              (let-exp #f '() '() exprs 'let))]
            [while-exp
             (test bodies)
-            (while-exp test bodies)]
+            (while-exp (syntax-expand test) (map syntax-expand bodies))]
            [var-exp (id) (var-exp id)]
            [lit-exp (val) (lit-exp val)]
            [lambda-exp (formals bodies) (lambda-exp formals (map syntax-expand bodies))]
